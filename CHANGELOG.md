@@ -4,6 +4,14 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.0.1] - 2026-07-06
+
+### Fixed
+
+- `reusable-governance.yml` no longer executes the vendored spec-alignment script directly (it needs PR-context inputs and runs in each repo's own CI); it now verifies the script is wired into a workflow instead
+- Org scripts made portable to the bash 3.2 shipped with macOS (no `mapfile`)
+- `rollout_governance.sh` now declares governing specs in the PR body and links a tracking issue, satisfying consuming repos' spec-alignment and traceability gates
+
 ## [1.0.0] - 2026-07-06
 
 First versioned governance release.

@@ -29,7 +29,9 @@ echo
 echo "| repo | version pin | CODEOWNERS | dependabot | CLA wf | governance wf | agent docs | ruleset |"
 echo "|---|---|---|---|---|---|---|---|"
 
-mapfile -t repos < <(gh repo list "$ORG" --limit 200 --json name --jq '.[].name')
+repos=()
+while IFS= read -r r; do repos+=("$r"); done \
+  < <(gh repo list "$ORG" --limit 200 --json name --jq '.[].name')
 
 for repo in "${repos[@]}"; do
   ver="no"; has_file "$repo" ".governance-version" && ver="yes"

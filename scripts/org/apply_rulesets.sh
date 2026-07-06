@@ -21,7 +21,9 @@ RULESET_NAME="$(jq -r .name "$RULESET_FILE")"
 if [ "$#" -gt 0 ]; then
   repos=("$@")
 else
-  mapfile -t repos < <(gh repo list "$ORG" --limit 200 --json name --jq '.[].name')
+  repos=()
+  while IFS= read -r r; do repos+=("$r"); done \
+    < <(gh repo list "$ORG" --limit 200 --json name --jq '.[].name')
 fi
 
 for repo in "${repos[@]}"; do
