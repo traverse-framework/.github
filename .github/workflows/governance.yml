@@ -1,0 +1,12 @@
+# Org-wide governance baseline gate (this repo calls its own reusable workflow).
+name: governance
+
+on:
+  pull_request: {}
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@v1

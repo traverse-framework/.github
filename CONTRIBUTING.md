@@ -7,6 +7,8 @@ Thanks for contributing to a `traverse-framework` project.
 Please read:
 
 - [constitution.md](constitution.md)
+- [GOVERNANCE.md](GOVERNANCE.md) — ownership and decision model
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 - [docs/quality-standards.md](docs/quality-standards.md)
 - [docs/antipatterns.md](docs/antipatterns.md)
 - [docs/compatibility-policy.md](docs/compatibility-policy.md)
@@ -21,7 +23,7 @@ Please read:
 - Core runtime and business logic require 100% automated coverage.
 - Material architecture changes require an ADR.
 - Portability exceptions must be explicit and reviewed.
-- All contributions are governed by the CLA in `CLA.md`.
+- All contributions are governed by the CLA in `CLA.md` — enforced automatically by the `cla` check on your first PR; sign once and it covers every repo in the org.
 
 ## Workflow
 

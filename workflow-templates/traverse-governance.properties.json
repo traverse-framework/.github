@@ -1,0 +1,6 @@
+{
+  "name": "Traverse governance baseline",
+  "description": "Checks governance version pin, CODEOWNERS, dependabot config, agent docs, and the spec-alignment gate (traverse-framework governance).",
+  "iconName": "octicon checklist",
+  "categories": ["Automation"]
+}

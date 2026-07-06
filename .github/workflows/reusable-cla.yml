@@ -1,0 +1,44 @@
+# Reusable CLA gate. Called from each org repo's .github/workflows/cla.yml.
+#
+# Signatures are stored centrally in this repo, branch `cla-signatures`,
+# so one acceptance covers every traverse-framework repository (per CLA.md).
+# Writing to that branch from other repos requires the CLA_ASSISTANT_PAT
+# secret (fine-grained PAT with contents:write on traverse-framework/.github)
+# to be available in the calling repo — see docs/owner-setup.md.
+name: reusable-cla
+
+on:
+  workflow_call:
+    secrets:
+      cla-assistant-pat:
+        description: "PAT with contents:write on traverse-framework/.github, used to record signatures"
+        required: true
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  cla:
+    name: cla
+    runs-on: ubuntu-latest
+    if: |
+      github.event.comment.body == 'recheck' ||
+      github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA' ||
+      github.event_name == 'pull_request_target'
+    steps:
+      - name: CLA assistant
+        uses: contributor-assistant/github-action@v2.6.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.cla-assistant-pat }}
+        with:
+          remote-organization-name: traverse-framework
+          remote-repository-name: .github
+          branch: cla-signatures
+          path-to-signatures: signatures/version1/cla.json
+          path-to-document: https://github.com/traverse-framework/.github/blob/HEAD/CLA.md
+          allowlist: enricopiovesan,*[bot]
+          lock-pullrequest-aftermerge: false

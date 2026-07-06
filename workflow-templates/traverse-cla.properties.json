@@ -1,0 +1,6 @@
+{
+  "name": "Traverse CLA gate",
+  "description": "Org-wide Contributor License Agreement check on every pull request (traverse-framework governance).",
+  "iconName": "octicon law",
+  "categories": ["Automation"]
+}

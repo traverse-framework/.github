@@ -1,0 +1,58 @@
+# Reusable governance baseline check. Called from each org repo's
+# .github/workflows/governance.yml on every pull request.
+#
+# Verifies the repo carries the required governance artifacts and, when the
+# repo vendors the spec-alignment gate, runs it. Repos with no protected
+# specs pass automatically (see docs/quality-standards.md).
+name: reusable-governance
+
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    name: governance-baseline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Required governance files present
+        run: |
+          set -u
+          missing=0
+          require() {
+            if [ ! -e "$1" ]; then
+              echo "::error::missing required governance file: $1 — $2"
+              missing=1
+            fi
+          }
+          require ".governance-version" "records which traverse-framework/.github governance release this repo has adopted"
+          require ".github/CODEOWNERS" "every repo carries its own CODEOWNERS (not inherited from the org .github repo)"
+          require ".github/dependabot.yml" "dependency/security updates are a required validation gate"
+          if [ ! -e "CLAUDE.md" ] && [ ! -e "AGENTS.md" ]; then
+            echo "::error::missing CLAUDE.md or AGENTS.md — required by docs/ai-agent-hardening.md"
+            missing=1
+          fi
+          exit $missing
+
+      - name: Governance version is a known release
+        run: |
+          v="$(cat .governance-version)"
+          echo "adopted governance version: $v"
+          case "$v" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "::error::.governance-version must contain a release tag like v1.0.0"; exit 1 ;;
+          esac
+
+      - name: Spec-alignment gate (if vendored)
+        run: |
+          if [ -x scripts/ci/spec_alignment_check.sh ]; then
+            scripts/ci/spec_alignment_check.sh
+          elif [ -e scripts/ci/spec_alignment_check.sh ]; then
+            bash scripts/ci/spec_alignment_check.sh
+          else
+            echo "no vendored spec-alignment gate in this repo; skipping"
+          fi
