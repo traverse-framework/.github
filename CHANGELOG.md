@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Caller workflows reference the reusable workflows at this repo's default branch instead of a moving `v1` tag; release tags (`vX.Y.Z`) remain the pin points for adopted governance content
+- CODEOWNERS is no longer a required governance file (solo-maintainer, agent-driven mode): removed from the baseline gate, the audit, and the rollout. Human-approval requirements stay at zero; enforcement is automated checks only. Reintroduce CODEOWNERS when a second maintainer joins.
 
 ## [1.0.0] - 2026-07-06
 

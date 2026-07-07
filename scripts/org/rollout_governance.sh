@@ -5,7 +5,6 @@
 # default branch, adds any missing governance artifacts, and opens a PR:
 #   - .github/workflows/cla.yml          (calls reusable-cla.yml)
 #   - .github/workflows/governance.yml   (calls reusable-governance.yml)
-#   - .github/CODEOWNERS                 (if missing)
 #   - .github/dependabot.yml             (if missing; ecosystems auto-detected)
 #   - .governance-version                (created or updated to $VERSION)
 #
@@ -105,11 +104,6 @@ for repo in "${repos[@]}"; do
   write_governance_workflow "$dir"
   printf '%s\n' "$VERSION" > "$dir/.governance-version"
 
-  if [ ! -e "$dir/.github/CODEOWNERS" ]; then
-    mkdir -p "$dir/.github"
-    printf '* @enricopiovesan\n' > "$dir/.github/CODEOWNERS"
-  fi
-
   if [ ! -e "$dir/.github/dependabot.yml" ]; then
     mkdir -p "$dir/.github"
     {
@@ -168,7 +162,7 @@ Adopts the org-wide governance released as [@VERSION@](https://github.com/traver
 - **cla.yml** — CLA gate on every PR (contributor-assistant, signatures stored centrally in `traverse-framework/.github@cla-signatures`). Requires the `CLA_ASSISTANT_PAT` secret; until it is set, the check fails closed for external contributors.
 - **governance.yml** — baseline gate: governance version pin, CODEOWNERS, dependabot config, agent docs, and spec-alignment wiring where the gate is vendored.
 - **.governance-version** — pins this repo to governance @VERSION@; adopting a newer release is a deliberate PR.
-- **CODEOWNERS / dependabot.yml** — added only if the repo didn't have them.
+- **dependabot.yml** — added only if the repo didn't have it.
 
 See CONTRIBUTING.md and GOVERNANCE.md in traverse-framework/.github for the rules these gates enforce.
 EOF

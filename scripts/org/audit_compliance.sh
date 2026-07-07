@@ -26,8 +26,8 @@ echo "# Governance compliance report — $ORG"
 echo
 echo "_Generated $(date -u +%Y-%m-%dT%H:%M:%SZ) against governance $(cat "$(dirname "$0")/../../CHANGELOG.md" 2>/dev/null | grep -om1 '\[[0-9.]*\]' | tr -d '[]' || echo '?')_"
 echo
-echo "| repo | version pin | CODEOWNERS | dependabot | CLA wf | governance wf | agent docs | ruleset |"
-echo "|---|---|---|---|---|---|---|---|"
+echo "| repo | version pin | dependabot | CLA wf | governance wf | agent docs | ruleset |"
+echo "|---|---|---|---|---|---|---|"
 
 repos=()
 while IFS= read -r r; do repos+=("$r"); done \
@@ -35,7 +35,6 @@ while IFS= read -r r; do repos+=("$r"); done \
 
 for repo in "${repos[@]}"; do
   ver="no"; has_file "$repo" ".governance-version" && ver="yes"
-  own="no"; has_file "$repo" ".github/CODEOWNERS" && own="yes"
   dep="no"; has_file "$repo" ".github/dependabot.yml" && dep="yes"
   cla="no"; has_file "$repo" ".github/workflows/cla.yml" && cla="yes"
   gov="no"; has_file "$repo" ".github/workflows/governance.yml" && gov="yes"
@@ -48,7 +47,7 @@ for repo in "${repos[@]}"; do
     if echo "$rulesets" | grep -qx "$RULESET_NAME"; then ruleset_cell="✅"; else ruleset_cell="❌"; FAILURES=$((FAILURES + 1)); fi
   fi
 
-  echo "| $repo | $(check "$ver") | $(check "$own") | $(check "$dep") | $(check "$cla") | $(check "$gov") | $(check "$agent") | $ruleset_cell |"
+  echo "| $repo | $(check "$ver") | $(check "$dep") | $(check "$cla") | $(check "$gov") | $(check "$agent") | $ruleset_cell |"
 done
 
 echo

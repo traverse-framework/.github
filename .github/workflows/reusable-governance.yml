@@ -30,7 +30,6 @@ jobs:
             fi
           }
           require ".governance-version" "records which traverse-framework/.github governance release this repo has adopted"
-          require ".github/CODEOWNERS" "every repo carries its own CODEOWNERS (not inherited from the org .github repo)"
           require ".github/dependabot.yml" "dependency/security updates are a required validation gate"
           if [ ! -e "CLAUDE.md" ] && [ ! -e "AGENTS.md" ]; then
             echo "::error::missing CLAUDE.md or AGENTS.md — required by docs/ai-agent-hardening.md"
