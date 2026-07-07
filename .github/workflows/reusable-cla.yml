@@ -29,7 +29,33 @@ jobs:
       github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA' ||
       github.event_name == 'pull_request_target'
     steps:
+      # Without the PAT the CLA action cannot even read signatures and fails
+      # for everyone. Degrade gracefully: allowlisted authors (owner + bots,
+      # who never need to sign) pass with a warning; everyone else still
+      # fails closed so no unsigned external contribution can merge.
+      - name: Check CLA storage configuration
+        id: cfg
+        env:
+          PAT: ${{ secrets.cla-assistant-pat }}
+          AUTHOR: ${{ github.event.pull_request.user.login || github.event.comment.user.login || github.actor }}
+        run: |
+          if [ -n "$PAT" ]; then
+            echo "mode=enforce" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          case "$AUTHOR" in
+            enricopiovesan|*"[bot]")
+              echo "::warning::CLA_ASSISTANT_PAT is not configured (see docs/owner-setup.md); author '$AUTHOR' is allowlisted so this check passes. External contributors fail closed until the secret is set."
+              echo "mode=allowlisted-pass" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::CLA gate cannot record signatures: the CLA_ASSISTANT_PAT secret is not configured (see docs/owner-setup.md in traverse-framework/.github). Failing closed for author '$AUTHOR'."
+              exit 1
+              ;;
+          esac
+
       - name: CLA assistant
+        if: steps.cfg.outputs.mode == 'enforce'
         uses: contributor-assistant/github-action@v2.6.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,5 +66,7 @@ jobs:
           branch: cla-signatures
           path-to-signatures: signatures/version1/cla.json
           path-to-document: https://github.com/traverse-framework/.github/blob/HEAD/CLA.md
-          allowlist: enricopiovesan,*[bot]
+          # claude / cursoragent / "Enrico Piovesan" are the owner's coding
+          # agents and the owner's unlinked machine-local git identity.
+          allowlist: enricopiovesan,claude,cursoragent,Enrico Piovesan,*[bot]
           lock-pullrequest-aftermerge: false
