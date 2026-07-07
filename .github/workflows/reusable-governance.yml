@@ -30,7 +30,6 @@ jobs:
             fi
           }
           require ".governance-version" "records which traverse-framework/.github governance release this repo has adopted"
-          require ".github/CODEOWNERS" "every repo carries its own CODEOWNERS (not inherited from the org .github repo)"
           require ".github/dependabot.yml" "dependency/security updates are a required validation gate"
           if [ ! -e "CLAUDE.md" ] && [ ! -e "AGENTS.md" ]; then
             echo "::error::missing CLAUDE.md or AGENTS.md — required by docs/ai-agent-hardening.md"
@@ -47,12 +46,19 @@ jobs:
             *) echo "::error::.governance-version must contain a release tag like v1.0.0"; exit 1 ;;
           esac
 
-      - name: Spec-alignment gate (if vendored)
+      # The spec-alignment script needs PR context (body file, base/head SHAs)
+      # and runs inside each repo's own CI per docs/quality-standards.md, so
+      # here we only verify it is wired in — running it again would duplicate
+      # the gate without its inputs.
+      - name: Spec-alignment gate wired into CI (if vendored)
         run: |
-          if [ -x scripts/ci/spec_alignment_check.sh ]; then
-            scripts/ci/spec_alignment_check.sh
-          elif [ -e scripts/ci/spec_alignment_check.sh ]; then
-            bash scripts/ci/spec_alignment_check.sh
+          if [ -e scripts/ci/spec_alignment_check.sh ]; then
+            if grep -rq "spec_alignment_check.sh" .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null; then
+              echo "spec-alignment gate is vendored and wired into CI"
+            else
+              echo "::error::scripts/ci/spec_alignment_check.sh is vendored but no workflow in .github/workflows runs it"
+              exit 1
+            fi
           else
             echo "no vendored spec-alignment gate in this repo; skipping"
           fi

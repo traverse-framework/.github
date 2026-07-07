@@ -12,7 +12,7 @@ Everything in this repo that can be automated is automated. The items below requ
 
 - [ ] **Require 2FA for the org** (Org Settings → Authentication security). Currently off.
 - [ ] **Optionally add `ORG_AUDIT_TOKEN`** org secret (fine-grained PAT, all org repos, **Administration: read**) so the weekly audit can verify rulesets; without it the ruleset column reads `?`.
-- [ ] **Review required status checks per repo.** The baseline ruleset intentionally requires no named status checks (wrong names brick merges). After the `cla` and `governance` workflows have run once in each repo, add their observed check names as required checks in each repo's settings (or extend the ruleset JSON and re-run `scripts/org/apply_rulesets.sh`).
+- [ ] **Apply the required-checks ruleset after the rollout PRs merge.** Run `scripts/org/apply_rulesets.sh -f governance/rulesets/required-checks-ruleset.json` once every repo has the `cla`/`governance` workflows on its default branch. It requires the observed contexts `baseline / governance-baseline` and `cla / cla` — this is what makes auto-merge wait for the gates. Applying it earlier blocks all PRs, because the named checks never run.
 
 ## Strongly recommended for the "sell it someday" goal
 
@@ -22,6 +22,7 @@ Everything in this repo that can be automated is automated. The items below requ
 
 ## Nice to have
 
+- [ ] Delete the obsolete `v1` tag on this repo (`git push origin :refs/tags/v1`) — callers now reference the default branch; only `vX.Y.Z` release tags are meaningful.
 - [ ] Add `FUNDING.yml` in this repo if/when you set up GitHub Sponsors or similar.
 - [ ] Enable GitHub Discussions on repos where open-ended questions are expected.
 - [ ] Rename this repo's default branch from `bootstrap-governance` to `main` for convention (Settings → Branches → rename; GitHub redirects automatically).

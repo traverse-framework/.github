@@ -4,6 +4,24 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.0.1] - 2026-07-06
+
+### Fixed
+
+- `reusable-governance.yml` no longer executes the vendored spec-alignment script directly (it needs PR-context inputs and runs in each repo's own CI); it now verifies the script is wired into a workflow instead
+- Org scripts made portable to the bash 3.2 shipped with macOS (no `mapfile`)
+- `rollout_governance.sh` now declares governing specs in the PR body and links a tracking issue, satisfying consuming repos' spec-alignment and traceability gates
+
+### Changed
+
+- Caller workflows reference the reusable workflows at this repo's default branch instead of a moving `v1` tag; release tags (`vX.Y.Z`) remain the pin points for adopted governance content
+- CODEOWNERS is no longer a required governance file (solo-maintainer, agent-driven mode): removed from the baseline gate, the audit, and the rollout. Human-approval requirements stay at zero; enforcement is automated checks only. Reintroduce CODEOWNERS when a second maintainer joins.
+
+### Added (1.0.1)
+
+- `governance/rulesets/required-checks-ruleset.json` — requires `baseline / governance-baseline` and `cla / cla` on default branches, so auto-merge waits for the gates; apply only after every repo carries the caller workflows (see docs/owner-setup.md)
+- `apply_rulesets.sh` applies every ruleset JSON in `governance/rulesets/` (or a single one via `-f`)
+
 ## [1.0.0] - 2026-07-06
 
 First versioned governance release.

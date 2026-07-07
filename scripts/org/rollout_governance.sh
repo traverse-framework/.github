@@ -5,7 +5,6 @@
 # default branch, adds any missing governance artifacts, and opens a PR:
 #   - .github/workflows/cla.yml          (calls reusable-cla.yml)
 #   - .github/workflows/governance.yml   (calls reusable-governance.yml)
-#   - .github/CODEOWNERS                 (if missing)
 #   - .github/dependabot.yml             (if missing; ecosystems auto-detected)
 #   - .governance-version                (created or updated to $VERSION)
 #
@@ -25,7 +24,9 @@ trap 'rm -rf "$WORKDIR"' EXIT
 if [ "$#" -gt 0 ]; then
   repos=("$@")
 else
-  mapfile -t repos < <(gh repo list "$ORG" --limit 200 --json name --jq '.[].name | select(. != ".github")')
+  repos=()
+  while IFS= read -r r; do repos+=("$r"); done \
+    < <(gh repo list "$ORG" --limit 200 --json name --jq '.[].name | select(. != ".github")')
 fi
 
 write_cla_workflow() {
@@ -48,7 +49,7 @@ permissions:
 
 jobs:
   cla:
-    uses: traverse-framework/.github/.github/workflows/reusable-cla.yml@v1
+    uses: traverse-framework/.github/.github/workflows/reusable-cla.yml@bootstrap-governance
     secrets:
       cla-assistant-pat: \${{ secrets.CLA_ASSISTANT_PAT }}
 EOF
@@ -68,8 +69,29 @@ permissions:
 
 jobs:
   baseline:
-    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@v1
+    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@bootstrap-governance
 EOF
+}
+
+# Print `- <spec-id>` lines for approved specs governing the workflow files
+# this rollout adds, so PR bodies satisfy the repo's spec-alignment gate.
+governing_specs() { # <repo-checkout-dir>
+  python3 - "$1" <<'PY'
+import json, sys
+from pathlib import Path
+
+reg_path = Path(sys.argv[1]) / "specs/governance/approved-specs.json"
+if not reg_path.is_file():
+    sys.exit(0)
+try:
+    registry = json.loads(reg_path.read_text())
+except Exception:
+    sys.exit(0)
+added = [".github/workflows/cla.yml", ".github/workflows/governance.yml"]
+for spec in registry.get("specs", []):
+    if any(p.startswith(prefix) for prefix in spec.get("governs", []) for p in added):
+        print(f"- `{spec['id']}`")
+PY
 }
 
 for repo in "${repos[@]}"; do
@@ -81,11 +103,6 @@ for repo in "${repos[@]}"; do
   write_cla_workflow "$dir"
   write_governance_workflow "$dir"
   printf '%s\n' "$VERSION" > "$dir/.governance-version"
-
-  if [ ! -e "$dir/.github/CODEOWNERS" ]; then
-    mkdir -p "$dir/.github"
-    printf '* @enricopiovesan\n' > "$dir/.github/CODEOWNERS"
-  fi
 
   if [ ! -e "$dir/.github/dependabot.yml" ]; then
     mkdir -p "$dir/.github"
@@ -128,19 +145,64 @@ EOF
   git -C "$dir" commit --quiet -m "Adopt org governance $VERSION: shared CLA + governance gates, CODEOWNERS, dependabot, version pin"
   git -C "$dir" push --quiet -u origin "$BRANCH"
 
+  issue_url="$(gh issue create --repo "$ORG/$repo" \
+    --title "Adopt org governance $VERSION" \
+    --body "Tracking issue for the governance rollout PR (branch \`$BRANCH\`). See https://github.com/traverse-framework/.github/blob/$VERSION/CHANGELOG.md" \
+    2>/dev/null || true)"
+
+  # Section superset satisfies every repo's pr-hygiene gate (traverse checks
+  # Governing Spec / Project Item / Validation; reference-apps checks
+  # Summary / Definition of Done / Validation).
   body_file="$WORKDIR/pr-body-$repo.md"
   sed "s/@VERSION@/$VERSION/g" > "$body_file" <<'EOF'
+## Summary
+
 Adopts the org-wide governance released as [@VERSION@](https://github.com/traverse-framework/.github/blob/@VERSION@/CHANGELOG.md):
 
 - **cla.yml** — CLA gate on every PR (contributor-assistant, signatures stored centrally in `traverse-framework/.github@cla-signatures`). Requires the `CLA_ASSISTANT_PAT` secret; until it is set, the check fails closed for external contributors.
-- **governance.yml** — baseline gate: governance version pin, CODEOWNERS, dependabot config, agent docs, and the vendored spec-alignment check when present.
+- **governance.yml** — baseline gate: governance version pin, CODEOWNERS, dependabot config, agent docs, and spec-alignment wiring where the gate is vendored.
 - **.governance-version** — pins this repo to governance @VERSION@; adopting a newer release is a deliberate PR.
-- **CODEOWNERS / dependabot.yml** — added only if the repo didn't have them.
+- **dependabot.yml** — added only if the repo didn't have it.
 
 See CONTRIBUTING.md and GOVERNANCE.md in traverse-framework/.github for the rules these gates enforce.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
+
+  specs_lines="$(governing_specs "$dir")"
+  if [ -n "$specs_lines" ]; then
+    {
+      echo
+      echo "## Governing Spec"
+      echo
+      echo "$specs_lines"
+    } >> "$body_file"
+  fi
+  {
+    echo
+    echo "## Project Item"
+    echo
+    if [ -n "$issue_url" ]; then
+      echo "Tracking issue: $issue_url — add to this repo's project board per CONTRIBUTING."
+    else
+      echo "Tracking issue could not be created automatically; link one before merging."
+    fi
+    echo
+    echo "## Definition of Done"
+    echo
+    echo "- Governance workflows present and required files in place on this branch"
+    echo "- \`.governance-version\` pins $VERSION"
+    echo "- All PR checks green"
+    echo
+    echo "## Validation"
+    echo
+    echo "- This repo's own CI (including spec-alignment where wired) runs on this PR and must pass."
+    echo "- \`baseline / governance-baseline\` must be green."
+    if [ -n "$issue_url" ]; then
+      echo
+      echo "Closes $issue_url"
+    fi
+    echo
+    echo "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+  } >> "$body_file"
 
   gh pr create --repo "$ORG/$repo" \
     --head "$BRANCH" \

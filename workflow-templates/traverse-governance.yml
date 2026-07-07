@@ -9,4 +9,4 @@ permissions:
 
 jobs:
   baseline:
-    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@v1
+    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@bootstrap-governance

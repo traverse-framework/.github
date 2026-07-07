@@ -1,4 +1,0 @@
-# Default owners for everything in this repo.
-# CODEOWNERS is not inherited from the org .github repo — every repo in the
-# org carries its own copy (added by scripts/org/rollout_governance.sh).
-* @enricopiovesan
