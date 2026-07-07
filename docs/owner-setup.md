@@ -22,6 +22,7 @@ Everything in this repo that can be automated is automated. The items below requ
 
 ## Nice to have
 
+- [ ] Delete the obsolete `v1` tag on this repo (`git push origin :refs/tags/v1`) — callers now reference the default branch; only `vX.Y.Z` release tags are meaningful.
 - [ ] Add `FUNDING.yml` in this repo if/when you set up GitHub Sponsors or similar.
 - [ ] Enable GitHub Discussions on repos where open-ended questions are expected.
 - [ ] Rename this repo's default branch from `bootstrap-governance` to `main` for convention (Settings → Branches → rename; GitHub redirects automatically).

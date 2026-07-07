@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Org scripts made portable to the bash 3.2 shipped with macOS (no `mapfile`)
 - `rollout_governance.sh` now declares governing specs in the PR body and links a tracking issue, satisfying consuming repos' spec-alignment and traceability gates
 
+### Changed
+
+- Caller workflows reference the reusable workflows at this repo's default branch instead of a moving `v1` tag; release tags (`vX.Y.Z`) remain the pin points for adopted governance content
+
 ## [1.0.0] - 2026-07-06
 
 First versioned governance release.

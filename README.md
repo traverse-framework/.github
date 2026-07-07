@@ -35,7 +35,7 @@ Shared governance for every repo under the `traverse-framework` GitHub organizat
 Each repo (`traverse`, `registry`, etc.) adopts governance three ways:
 
 1. **Pinned version.** A `.governance-version` file records which release of this repo (see [`CHANGELOG.md`](CHANGELOG.md)) the repo has adopted. Vendored content (constitution, docs, the spec-alignment script) comes from that release. Adopting a new version is a deliberate PR — never automatic or silent.
-2. **Shared gates.** Thin caller workflows (`cla.yml`, `governance.yml`) reference the reusable workflows here at the `v1` tag, so gate logic updates centrally.
+2. **Shared gates.** Thin caller workflows (`cla.yml`, `governance.yml`) reference the reusable workflows here at this repo's default branch, so gate logic updates centrally the moment a governance PR merges.
 3. **Enforced rulesets.** Every repo carries the baseline branch ruleset (PRs required, no force-push, no deletion, linear history, conversation resolution). Repos may be stricter, never looser. The weekly [`org-audit`](.github/workflows/org-audit.yml) catches drift.
 
 New repos start from the [`repo-template`](https://github.com/traverse-framework/repo-template) template repository, which ships compliant.

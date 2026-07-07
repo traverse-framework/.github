@@ -50,7 +50,7 @@ permissions:
 
 jobs:
   cla:
-    uses: traverse-framework/.github/.github/workflows/reusable-cla.yml@v1
+    uses: traverse-framework/.github/.github/workflows/reusable-cla.yml@bootstrap-governance
     secrets:
       cla-assistant-pat: \${{ secrets.CLA_ASSISTANT_PAT }}
 EOF
@@ -70,7 +70,7 @@ permissions:
 
 jobs:
   baseline:
-    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@v1
+    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@bootstrap-governance
 EOF
 }
 
