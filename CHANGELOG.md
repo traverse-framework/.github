@@ -4,6 +4,13 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.0.2] - 2026-07-07
+
+### Fixed
+
+- CLA gate degrades gracefully while `CLA_ASSISTANT_PAT` is unset: allowlisted authors (owner and `*[bot]`) pass with a warning instead of everyone failing at action startup; non-allowlisted authors still fail closed. With `cla / cla` now a required check org-wide, the previous behavior blocked every PR including the owner's and Dependabot's.
+- CLA allowlist covers the owner's coding-agent identities (`claude`, `cursoragent`, and the owner's unlinked local git identity) so agent-authored PRs aren't asked to sign the owner's own CLA.
+
 ## [1.0.1] - 2026-07-06
 
 ### Fixed
