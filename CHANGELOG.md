@@ -17,6 +17,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Caller workflows reference the reusable workflows at this repo's default branch instead of a moving `v1` tag; release tags (`vX.Y.Z`) remain the pin points for adopted governance content
 - CODEOWNERS is no longer a required governance file (solo-maintainer, agent-driven mode): removed from the baseline gate, the audit, and the rollout. Human-approval requirements stay at zero; enforcement is automated checks only. Reintroduce CODEOWNERS when a second maintainer joins.
 
+### Added (1.0.1)
+
+- `governance/rulesets/required-checks-ruleset.json` — requires `baseline / governance-baseline` and `cla / cla` on default branches, so auto-merge waits for the gates; apply only after every repo carries the caller workflows (see docs/owner-setup.md)
+- `apply_rulesets.sh` applies every ruleset JSON in `governance/rulesets/` (or a single one via `-f`)
+
 ## [1.0.0] - 2026-07-06
 
 First versioned governance release.
