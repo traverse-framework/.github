@@ -4,6 +4,13 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.2.0] - 2026-07-08
+
+### Added
+
+- `reusable-dependabot-hygiene.yml` — fills Dependabot PR bodies with the required hygiene sections, declaring the governing specs actually matched by the changed files, so dependency PRs stop perma-blocking on body-section gates while repo CI still validates the bump. Repos opt in by adding one job to their `cla.yml` caller (already on `pull_request_target`).
+- `docs/runbook.md` — operations runbook: release process, repo onboarding, failure playbook (rerun snapshot-pinning, CLA recheck, secret visibility, empty-commit retrigger), and environment constraints.
+
 ## [1.1.1] - 2026-07-08
 
 ### Fixed
