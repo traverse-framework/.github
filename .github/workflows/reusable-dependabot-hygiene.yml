@@ -1,0 +1,87 @@
+# Fills Dependabot PR bodies with the org's required hygiene sections so
+# pr-hygiene / spec-alignment gates can evaluate them. Dependabot cannot
+# write these sections itself, and without them its PRs block forever in
+# repos whose gates require body sections. The Governing Spec section is
+# computed honestly from the repo's approved-specs registry against the
+# actually-changed files; the repo's CI gates still validate the bump.
+#
+# Call from a workflow with `on: pull_request_target` (e.g. the cla.yml
+# caller). No-op for non-Dependabot authors and already-filled bodies.
+name: reusable-dependabot-hygiene
+
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  fill-body:
+    name: dependabot-body
+    if: github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # base branch — for the approved-specs registry
+
+      - name: Fill required hygiene sections
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          body="$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json body --jq .body)"
+          if printf '%s' "$body" | grep -q "^## Summary"; then
+            echo "hygiene sections already present"
+            exit 0
+          fi
+
+          gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only > /tmp/changed.txt
+
+          specs=""
+          if [ -e specs/governance/approved-specs.json ]; then
+            specs="$(python3 - <<'PY'
+          import json
+          changed = [l.strip() for l in open("/tmp/changed.txt") if l.strip()]
+          reg = json.load(open("specs/governance/approved-specs.json"))
+          ids = []
+          for spec in reg.get("specs", []):
+              if any(p.startswith(pref) for pref in spec.get("governs", []) for p in changed):
+                  ids.append(spec["id"])
+          print("\n".join(f"- \x60{i}\x60" for i in ids))
+          PY
+          )"
+          fi
+
+          {
+            echo "## Summary"
+            echo
+            echo "$TITLE — automated dependency update by Dependabot. Body sections added by the org dependabot-hygiene workflow."
+            echo
+            echo "## Governing Spec"
+            echo
+            if [ -n "$specs" ]; then
+              echo "$specs"
+            else
+              echo "No governed paths changed."
+            fi
+            echo
+            echo "## Project Item"
+            echo
+            echo "Dependabot maintenance — exempt from board tracking per org governance."
+            echo
+            echo "## Definition of Done"
+            echo
+            echo "- All repo CI gates pass with the bumped dependency"
+            echo
+            echo "## Validation"
+            echo
+            echo "- Full CI matrix on this PR validates the bump"
+            echo
+            echo "---"
+            echo
+            printf '%s\n' "$body"
+          } > /tmp/newbody.md
+
+          gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --body-file /tmp/newbody.md
+          echo "hygiene sections added to PR #$PR"

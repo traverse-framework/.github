@@ -18,9 +18,11 @@ Shared governance for every repo under the `traverse-framework` GitHub organizat
 | [`docs/exception-process.md`](docs/exception-process.md) | How to document and review an exception to a rule |
 | [`docs/ai-agent-hardening.md`](docs/ai-agent-hardening.md) | Conventions every repo's `CLAUDE.md`/`AGENTS.md` should encode |
 | [`docs/owner-setup.md`](docs/owner-setup.md) | Manual steps only the org owner can perform |
+| [`docs/runbook.md`](docs/runbook.md) | Operations runbook: releases, repo onboarding, failure playbook |
 | [`CHANGELOG.md`](CHANGELOG.md) | Versioned governance releases (repos pin these) |
 | [`.github/workflows/reusable-cla.yml`](.github/workflows/reusable-cla.yml) | Reusable CLA gate; signatures stored centrally on the `cla-signatures` branch |
 | [`.github/workflows/reusable-governance.yml`](.github/workflows/reusable-governance.yml) | Reusable baseline gate: version pin, required files, spec-alignment |
+| [`.github/workflows/reusable-dependabot-hygiene.yml`](.github/workflows/reusable-dependabot-hygiene.yml) | Fills Dependabot PR bodies so body-section gates can evaluate them |
 | [`.github/workflows/org-audit.yml`](.github/workflows/org-audit.yml) | Weekly org-wide compliance audit; opens an issue when drift is found |
 | [`governance/rulesets/baseline-branch-ruleset.json`](governance/rulesets/baseline-branch-ruleset.json) | Canonical branch ruleset applied to every repo |
 | [`scripts/org/apply_rulesets.sh`](scripts/org/apply_rulesets.sh) | Applies the baseline ruleset to all org repos (idempotent) |
