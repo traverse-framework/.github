@@ -125,6 +125,23 @@ for repo in "${repos[@]}"; do
     } > "$dir/.github/dependabot.yml"
   fi
 
+  if [ ! -e "$dir/.claudeignore" ]; then
+    cat > "$dir/.claudeignore" <<'EOF'
+# Build artifacts, lockfiles, coverage, vendor trees — never index these
+target/
+node_modules/
+dist/
+build/
+coverage/
+*.lock
+Cargo.lock
+package-lock.json
+.DS_Store
+.idea/
+.vscode/
+EOF
+  fi
+
   if [ ! -e "$dir/CLAUDE.md" ] && [ ! -e "$dir/AGENTS.md" ]; then
     cat > "$dir/CLAUDE.md" <<EOF
 # CLAUDE.md
