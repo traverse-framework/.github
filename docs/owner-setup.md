@@ -10,7 +10,7 @@ Everything in this repo that can be automated is automated. The items below requ
 
 ## Required for enforcement coverage
 
-- [ ] **Require 2FA for the org** (Org Settings → Authentication security). Currently off. Free, UI-only (no API); enable 2FA on your own account first.
+- [ ] **Require 2FA for the org.** *Deferred by owner decision (2026-07-07) — org-level enforcement only polices other members, and there are none.* Revisit when the first collaborator gets org access. Separate and still worthwhile anytime: 2FA on the owner's personal account, which holds the org, the CLA rights, and all repos.
 - [ ] **Optionally add `ORG_AUDIT_TOKEN`** org secret (fine-grained PAT, all org repos, **Administration: read**) so the weekly audit can verify rulesets; without it the ruleset column reads `?`.
 - [x] **Apply the required-checks ruleset after the rollout PRs merge.** Done 2026-07-07 — active on all repos; contexts `baseline / governance-baseline` and `cla / cla` are required on every default branch, so auto-merge waits for the gates.
 
