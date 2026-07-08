@@ -4,6 +4,13 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.1.1] - 2026-07-08
+
+### Fixed
+
+- Baseline gate: the spec-alignment wiring requirement now applies only once a repo has approved specs — the gate script refuses an empty registry, so templates and brand-new repos could never satisfy it
+- Baseline gate: the doc-duplication warning accepts a substantial AGENTS.md that declares CLAUDE.md canonical (coordination-only content)
+
 ## [1.1.0] - 2026-07-07
 
 ### Added
