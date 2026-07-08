@@ -4,6 +4,13 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.1.0] - 2026-07-07
+
+### Added
+
+- Token-discipline rules in `docs/ai-agent-hardening.md`: single canonical agent doc (CLAUDE.md canonical, AGENTS.md = pointer + tool-coordination only), no version numbers in prose (point at `.governance-version`), no state snapshots in docs (live queries instead), `.claudeignore` required, lazy doc-reading map, PR-body section superset, bounded `gh` queries, org-wide lean-implementation ladder and claim-before-you-code rule
+- Baseline gate emits **warnings** (non-blocking) for: missing `.claudeignore`, hardcoded governance versions that drift from `.governance-version`, substantial CLAUDE.md+AGENTS.md duplication, CLAUDE.md over 8KB. These become blocking checks in the next **major** release.
+
 ## [1.0.2] - 2026-07-07
 
 ### Fixed

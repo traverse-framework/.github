@@ -46,6 +46,32 @@ jobs:
             *) echo "::error::.governance-version must contain a release tag like v1.0.0"; exit 1 ;;
           esac
 
+      # Token-discipline conventions from docs/ai-agent-hardening.md.
+      # Warnings only in governance 1.x; blocking in the next major release.
+      - name: Agent-doc hygiene (warnings only)
+        run: |
+          ver="$(cat .governance-version)"
+          if [ ! -e ".claudeignore" ]; then
+            echo "::warning::no .claudeignore — agents index build artifacts and vendor trees, wasting tokens (docs/ai-agent-hardening.md)"
+          fi
+          for f in CLAUDE.md AGENTS.md; do
+            [ -e "$f" ] || continue
+            stale="$(grep -oiE 'governance version v?[0-9]+\.[0-9]+(\.[0-9]+)?' "$f" | head -1 || true)"
+            if [ -n "$stale" ] && ! echo "$stale" | grep -q "${ver#v}"; then
+              echo "::warning file=$f::hardcoded '$stale' but .governance-version is $ver — never write version numbers in prose, point at .governance-version"
+            fi
+          done
+          if [ -e CLAUDE.md ] && [ -e AGENTS.md ]; then
+            c=$(wc -c < CLAUDE.md); a=$(wc -c < AGENTS.md)
+            if [ "$c" -gt 2000 ] && [ "$a" -gt 2000 ]; then
+              echo "::warning::CLAUDE.md (${c}B) and AGENTS.md (${a}B) are both substantial — one must be canonical, the other a pointer plus tool-specific coordination only (docs/ai-agent-hardening.md)"
+            fi
+          fi
+          if [ -e CLAUDE.md ] && [ "$(wc -c < CLAUDE.md)" -gt 8192 ]; then
+            echo "::warning file=CLAUDE.md::over 8KB — this file is loaded into every agent session; keep it under ~6KB (docs/ai-agent-hardening.md)"
+          fi
+          exit 0
+
       # The spec-alignment script needs PR context (body file, base/head SHAs)
       # and runs inside each repo's own CI per docs/quality-standards.md, so
       # here we only verify it is wired in — running it again would duplicate
