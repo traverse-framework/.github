@@ -79,15 +79,26 @@ jobs:
       # and runs inside each repo's own CI per docs/quality-standards.md, so
       # here we only verify it is wired in — running it again would duplicate
       # the gate without its inputs.
-      - name: Spec-alignment gate wired into CI (if vendored)
+      # Wiring is only required once the repo has approved specs — the gate
+      # script itself refuses an empty registry, so a template or brand-new
+      # repo cannot wire it yet (see repo-template's README checklist).
+      - name: Spec-alignment gate wired into CI (if vendored and specs exist)
         run: |
-          if [ -e scripts/ci/spec_alignment_check.sh ]; then
-            if grep -rq "spec_alignment_check.sh" .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null; then
-              echo "spec-alignment gate is vendored and wired into CI"
-            else
-              echo "::error::scripts/ci/spec_alignment_check.sh is vendored but no workflow in .github/workflows runs it"
-              exit 1
-            fi
-          else
+          if [ ! -e scripts/ci/spec_alignment_check.sh ]; then
             echo "no vendored spec-alignment gate in this repo; skipping"
+            exit 0
+          fi
+          count=0
+          if [ -e specs/governance/approved-specs.json ]; then
+            count=$(python3 -c "import json; print(len(json.load(open('specs/governance/approved-specs.json')).get('specs', [])))" 2>/dev/null || echo 0)
+          fi
+          if [ "$count" -eq 0 ]; then
+            echo "spec-alignment gate vendored but no approved specs yet; wiring not required until the first spec is approved"
+            exit 0
+          fi
+          if grep -rq "spec_alignment_check.sh" .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null; then
+            echo "spec-alignment gate is vendored and wired into CI ($count approved specs)"
+          else
+            echo "::error::repo has $count approved specs and vendors scripts/ci/spec_alignment_check.sh, but no workflow in .github/workflows runs it"
+            exit 1
           fi
