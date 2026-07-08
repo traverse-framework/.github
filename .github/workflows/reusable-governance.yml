@@ -61,10 +61,13 @@ jobs:
               echo "::warning file=$f::hardcoded '$stale' but .governance-version is $ver — never write version numbers in prose, point at .governance-version"
             fi
           done
+          # A substantial AGENTS.md is fine when it declares CLAUDE.md canonical
+          # (coordination-only content); warn only when neither file defers.
           if [ -e CLAUDE.md ] && [ -e AGENTS.md ]; then
             c=$(wc -c < CLAUDE.md); a=$(wc -c < AGENTS.md)
-            if [ "$c" -gt 2000 ] && [ "$a" -gt 2000 ]; then
-              echo "::warning::CLAUDE.md (${c}B) and AGENTS.md (${a}B) are both substantial — one must be canonical, the other a pointer plus tool-specific coordination only (docs/ai-agent-hardening.md)"
+            if [ "$c" -gt 2000 ] && [ "$a" -gt 2000 ] \
+               && ! grep -qiE "canonical.*(CLAUDE|AGENTS)\.md" CLAUDE.md AGENTS.md; then
+              echo "::warning::CLAUDE.md (${c}B) and AGENTS.md (${a}B) are both substantial and neither declares the other canonical — one must be canonical, the other a pointer plus tool-specific coordination only (docs/ai-agent-hardening.md)"
             fi
           fi
           if [ -e CLAUDE.md ] && [ "$(wc -c < CLAUDE.md)" -gt 8192 ]; then
