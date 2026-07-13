@@ -22,7 +22,7 @@ jobs:
     if: github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # base branch — for the approved-specs registry
+      - uses: actions/checkout@v7 # base branch — for the approved-specs registry
 
       - name: Fill required hygiene sections
         env:
