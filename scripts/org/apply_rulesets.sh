@@ -42,6 +42,20 @@ fi
 for file in "${files[@]}"; do
   name="$(jq -r .name "$file")"
   for repo in "${repos[@]}"; do
+    # Guard against the exact bootstrapping bug this script caused once
+    # already: the required-checks ruleset requires the `cla / cla` context,
+    # which is a pull_request_target workflow — it only executes using the
+    # workflow definition already on the base branch. Applying this ruleset
+    # before cla.yml exists there permanently blocks every PR (including
+    # the one meant to add cla.yml), because the named check can never fire.
+    if [ "$name" = "traverse-governance-required-checks" ]; then
+      if ! gh api "repos/$ORG/$repo/contents/.github/workflows/cla.yml" \
+          --jq .path >/dev/null 2>&1; then
+        echo "SKIPPED '$name' on $ORG/$repo: .github/workflows/cla.yml not on the default branch yet." >&2
+        echo "  Merge the governance rollout PR first, then re-run this ruleset alone (-f)." >&2
+        continue
+      fi
+    fi
     existing_id="$(gh api "repos/$ORG/$repo/rulesets" --jq \
       ".[] | select(.name == \"$name\") | .id" 2>/dev/null || true)"
     if [ -n "$existing_id" ]; then

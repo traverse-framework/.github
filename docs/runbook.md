@@ -16,7 +16,7 @@ How to operate the `traverse-framework` org governance. Written so any agent or 
 3. Enable settings: `gh api -X PATCH repos/traverse-framework/<repo> -F allow_auto_merge=true -F delete_branch_on_merge=true`, plus `PUT .../private-vulnerability-reporting` and `PUT .../vulnerability-alerts`.
 4. Confirm with `scripts/org/audit_compliance.sh`.
 
-For a repo not born from the template, run `scripts/org/rollout_governance.sh <version> <repo>` to PR the required files in.
+For a repo not born from the template — i.e. retrofitting governance onto an existing repo — the sequencing matters and `apply_rulesets.sh` now enforces it automatically: run `rollout_governance.sh <version> <repo>` first, **merge that PR**, and only then run `apply_rulesets.sh <repo>` for the required-checks ruleset. Applying required-checks before `cla.yml` exists on the default branch makes the `cla / cla` check impossible to ever satisfy — it's a `pull_request_target` workflow that only executes using the definition already on the base branch — which permanently blocks every PR including the one meant to fix it. The script now skips that ruleset with a clear message if `cla.yml` isn't there yet, instead of creating the deadlock.
 
 ## Routine operation
 
