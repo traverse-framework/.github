@@ -4,6 +4,13 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.2.1] - 2026-07-27
+
+### Fixed
+
+- `apply_rulesets.sh` now refuses to apply the required-checks ruleset to a repo until `cla.yml` exists on that repo's default branch, instead of creating a merge deadlock (the same bootstrapping bug already fixed once for this repo itself in 1.0.1/1.0.2, reintroduced when retrofitting a new repo — `claude-skills` — without following the documented sequencing)
+- `docs/runbook.md`: repo onboarding steps for existing repos now state the merge-then-ruleset ordering explicitly
+
 ## [1.2.0] - 2026-07-08
 
 ### Added
