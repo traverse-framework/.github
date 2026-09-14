@@ -24,7 +24,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Rust, `v0.10.0`, 134 approved specs, 6 crates on crates.io, ~660 commits. |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Rust, `v0.10.1`, 145 approved specs, 6 crates on crates.io, ~720 commits. |
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, CI-validated, PR-published catalog. **46 capabilities across 24 domains** (117 signed versions) live at [registry.traverse-framework.com](https://registry.traverse-framework.com). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | Real example apps — one set of Traverse capabilities behind many UI shells: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — check the registry before authoring, compose capabilities, validate against the real CLI. |
