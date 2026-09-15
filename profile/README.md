@@ -27,8 +27,8 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Rust, published crates at **`v0.10.1`**, **147** approved specs, **6** crates on crates.io (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, plus registry client), ~723 commits. |
-| [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, CI-validated, PR-published catalog. **82** capabilities across **31** domains (**185** signed versions; **147** non-deprecated) live at [registry.traverse-framework.com](https://registry.traverse-framework.com). |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Rust, published crates at **`v0.10.2`**, **148** approved specs, **6** crates on crates.io (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate), ~732 commits. |
+| [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, CI-validated, PR-published catalog. **83** capabilities across **31** domains (**186** signed versions; **148** non-deprecated) live at [registry.traverse-framework.com](https://registry.traverse-framework.com). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — check the registry before authoring, compose capabilities, validate against the real CLI. |
 | [`website`](https://github.com/traverse-framework/website) | The public site and documentation. |
