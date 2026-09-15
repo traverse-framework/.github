@@ -37,7 +37,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 **Platform reach:** five embedder SDKs on one `embedder-api/1.0.0` contract and
 one CI conformance suite — Rust and Web/TypeScript published (crates.io /
-npm `traverse-embedder-web`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
+npm `traverse-embedder-web@0.10.2`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
 Chicory), and .NET (Windows, Wasmtime) ship from `traverse/packages/` and are
 usable in-tree / via reference apps, with public package certification still
 open. Cloud and edge placement targets are specified and on the roadmap, not
