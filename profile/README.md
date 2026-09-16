@@ -27,7 +27,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Rust, published crates at **`v0.11.0`**, **149** approved specs, **6** crates on crates.io (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate), ~754 commits. |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Rust, published crates at **`v0.12.0`**, **150** approved specs, **6** crates on crates.io (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate), ~754 commits. |
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, CI-validated, PR-published catalog. **92** capabilities across **33** domains (**213** signed versions; **175** non-deprecated) live at [registry.traverse-framework.com](https://registry.traverse-framework.com). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — check the registry before authoring, compose capabilities, validate against the real CLI. |
@@ -37,7 +37,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 **Platform reach:** five embedder SDKs on one `embedder-api/1.0.0` contract and
 one CI conformance suite — Rust and Web/TypeScript published (crates.io /
-npm `traverse-embedder-web@0.11.0`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
+npm `traverse-embedder-web@0.12.0`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
 Chicory), and .NET (Windows, Wasmtime) ship from `traverse/packages/` and are
 usable in-tree / via reference apps, with public package certification still
 open. Cloud and edge placement targets are specified and on the roadmap, not
