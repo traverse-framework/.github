@@ -21,6 +21,10 @@ for determinism, sandboxing, and portability.
 Browser, native, CLI, and MCP are **embedders / entry points**, not different
 Traverse runtimes.
 
+**What you get:** discover a governed capability → execute known behavior →
+produce a verifiable trace. Specs and CI gates stay in Governance below —
+honesty hygiene, not the pitch.
+
 Mobile embedders and reference-app shells for iOS and Android exist and are
 advancing (Swift/`wasmi`, Kotlin/Chicory), but they are not yet certified
 public releases the way native desktop and the published Web/TypeScript
@@ -39,8 +43,8 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Rust, published crates at **`v0.12.0`**, **150** approved specs, **6** crates on crates.io (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate), ~754 commits. |
-| [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, CI-validated, PR-published catalog. **92** capabilities across **33** domains (**213** signed versions; **175** non-deprecated) live at [registry.traverse-framework.com](https://registry.traverse-framework.com). |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Published crates at **`v0.12.0`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate). |
+| [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, PR-published catalog of governed capabilities. Live catalog: [registry.traverse-framework.com](https://registry.traverse-framework.com) (counts change; treat the site as source of truth). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — primary authoring on-ramp (`traverse-capability-author`), plus extractor and workflow-planner. Check the registry before authoring; validate against the real CLI. |
 | [`website`](https://github.com/traverse-framework/website) | The public site and documentation. |
@@ -88,10 +92,9 @@ that logic is a lookup, not a regeneration.
 
 ## Governance
 
-Every repo in this org follows the same spec-driven governance model: approved
-specs are versioned, immutable, and merge-gating; contracts are the source of
-truth for runtime behavior; core logic holds 100% automated coverage; a
-deterministic spec-alignment gate runs on every PR.
+Specs and CI gates are how we stay honest — not the product. Approved specs are
+versioned and merge-gating; contracts are the source of truth for runtime
+behavior.
 
 See [`constitution.md`](../constitution.md) for the full rules,
 [`GOVERNANCE.md`](../GOVERNANCE.md) for the ownership and decision model, and
