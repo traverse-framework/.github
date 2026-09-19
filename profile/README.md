@@ -21,6 +21,10 @@ for determinism, sandboxing, and portability.
 Browser, native, CLI, and MCP are **embedders / entry points**, not different
 Traverse runtimes.
 
+**What you get:** discover a governed capability → execute known behavior →
+produce a verifiable trace. Specs and CI gates stay in Governance below —
+honesty hygiene, not the pitch.
+
 Mobile embedders and reference-app shells for iOS and Android exist and are
 advancing (Swift/`wasmi`, Kotlin/Chicory), but they are not yet certified
 public releases the way native desktop and the published Web/TypeScript
