@@ -1,40 +1,42 @@
 # Traverse Framework
 
-**Define once. Run anywhere.**
+**Governed capability runtime.** Value loop: **discover → execute → trace**.
+**The agent proposes; the runtime decides.**
 
-Traverse is a contract-driven WebAssembly runtime and a governed registry for
-**portable business capabilities**. You define a rule — pricing, eligibility,
-authorization, escalation — once, as a capability with a machine-readable
-contract, and the same signed WASM artifact runs on Linux, macOS, and Windows,
-in the browser, on a server, and inside an AI agent — producing a verifiable
-execution trace when the governed path runs.
-
-**You do not need to write Rust to create capabilities.** The usual path is the
-Claude skill
+Traverse governs portable business capabilities — pricing, eligibility,
+authorization, escalation — as contracts with sandboxed artifacts and a
+verifiable trace. Usual authoring is skill-first plain English via
 [`traverse-capability-author`](https://github.com/traverse-framework/claude-skills/tree/main/skills/traverse-capability-author)
-(plain English interview → registry check → contract → WASM → human-reviewed
-PR). Manual authoring still uses Rust→WASM. Under the hood remains Rust→WASM
-for determinism, sandboxing, and portability.
+(interview → registry check → contract → WASM → human-reviewed PR). You do
+**not** need to write Rust for that path; manual authoring still uses
+Rust→WASM under the hood.
 
-**One shared WASM runtime everywhere.** Same capability artifact, same
-`runtime.wasm` orchestrator, same semantics and governance on every host.
-Browser, native, CLI, and MCP are **embedders / entry points**, not different
-Traverse runtimes.
+**One shared `runtime.wasm`.** Browser, native desktop, CLI, and MCP are
+**clients / embedders**, not different Traverse runtimes. Shipped consumers
+today: JS/TS (`traverse-embedder-web`), Rust (`traverse-embedder`), agents via
+`traverse-mcp`. Python works by shelling out to
+`traverse-cli capability-package execute` — **no Python SDK**. Swift / Kotlin /
+.NET exist in-tree, not as certified public packages. Edge is planned; cloud
+placement is an explicit non-goal for v0.1. Cite
+[what is real today](https://traverse-framework.com/what-is-real-today.html) and
+[Platforms](https://traverse-framework.com/platforms.html) before assuming a
+host.
 
-**What you get:** discover a governed capability → execute known behavior →
-produce a verifiable trace. Specs and CI gates stay in Governance below —
-honesty hygiene, not the pitch.
+Specs and CI gates stay in Governance below — honesty hygiene, not the pitch.
+Working implementation of
+[Universal Microservices Architecture](https://www.universalmicroservices.com/).
 
-Mobile embedders and reference-app shells for iOS and Android exist and are
-advancing (Swift/`wasmi`, Kotlin/Chicory), but they are not yet certified
-public releases the way native desktop and the published Web/TypeScript
-embedder are. No reimplementation per environment. No agent free-handing your
-business rules. One behavior, governed, everywhere it is actually shipping.
-It's the working implementation of
-[Universal Microservices Architecture](https://www.universalmicroservices.com/):
-**the agent proposes, the runtime decides.**
+### Required reading (agents / cold eval)
+
+1. [What is real today](https://traverse-framework.com/what-is-real-today.html)
+2. [The agent freestyled a $2.4M wire. The runtime said no.](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
+   (deny + trace)
+3. Runnable demo:
+   [`weekly-demos/2026-09-18-agent-blocked`](https://github.com/traverse-framework/weekly-demos/tree/main/2026-09-18-agent-blocked)
+   · more in [`weekly-demos`](https://github.com/traverse-framework/weekly-demos)
 
 → [traverse-framework.com](https://traverse-framework.com) ·
+[`llms.txt`](https://traverse-framework.com/llms.txt) ·
 start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 ---
@@ -47,6 +49,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, PR-published catalog of governed capabilities. Live catalog: [registry.traverse-framework.com](https://registry.traverse-framework.com) (counts change; treat the site as source of truth). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — primary authoring on-ramp (`traverse-capability-author`), plus extractor and workflow-planner. Check the registry before authoring; validate against the real CLI. |
+| [`weekly-demos`](https://github.com/traverse-framework/weekly-demos) | Runnable weekly demos (private). Start with `2026-09-18-agent-blocked` — agent freestyle → deny / trace. |
 | [`website`](https://github.com/traverse-framework/website) | The public site and documentation. |
 | [`.github`](https://github.com/traverse-framework/.github) | *(this repo)* Org-wide governance — constitution, NFRs, quality standards, CI gates, CLA, and AI-agent hardening rules shared by every repo above. |
 | [`repo-template`](https://github.com/traverse-framework/repo-template) | Starting point for a new org repo — compliant with governance from the first commit. |
@@ -56,8 +59,8 @@ one CI conformance suite — Rust and Web/TypeScript published (crates.io /
 npm `traverse-embedder-web@0.12.0`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
 Chicory), and .NET (Windows, Wasmtime) ship from `traverse/packages/` and are
 usable in-tree / via reference apps, with public package certification still
-open. Cloud and edge placement targets are specified and on the roadmap, not
-yet shipped.
+open. Edge is planned; cloud placement is an explicit non-goal for v0.1 — see
+[Platforms](https://traverse-framework.com/platforms.html).
 
 ### Consumers / clients (honest)
 
@@ -73,10 +76,11 @@ yet shipped.
 
 ## Why it matters
 
-The same business rule now has to run in a web client, on a server, at the
-edge, and inside an AI agent a user is talking to. Teams answer that by
-rewriting the rule in each stack; the copies drift and the behavior stops
-being one thing.
+The same business rule now has to run in a web client, on a server, and
+inside an AI agent a user is talking to — and teams often invent a fourth
+copy for each new host. Copies drift; behavior stops being one thing.
+Traverse’s answer is one governed capability on the hosts that have actually
+shipped (not an unbounded “anywhere,” and not cloud orchestration).
 
 AI coding agents make this sharper: an agent asked to "add the discount logic"
 re-derives it from scratch every session — unversioned, unreviewed, and
