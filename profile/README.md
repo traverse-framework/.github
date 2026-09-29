@@ -31,9 +31,10 @@ Working implementation of
 1. [What is real today](https://traverse-framework.com/what-is-real-today.html)
 2. [The agent freestyled a $2.4M wire. The runtime said no.](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
    (deny + trace)
-3. Runnable demo:
-   [`weekly-demos/2026-09-18-agent-blocked`](https://github.com/traverse-framework/weekly-demos/tree/main/2026-09-18-agent-blocked)
-   · more in [`weekly-demos`](https://github.com/traverse-framework/weekly-demos)
+3. Deny / multi-host direction (blog-first): [agent freestyle → blocked](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
+   · [same-wasm multi-host](https://traverse-framework.com/blog/same-wasm-multi-host.html)
+   · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
+   — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
 
 → [traverse-framework.com](https://traverse-framework.com) ·
 [`llms.txt`](https://traverse-framework.com/llms.txt) ·
@@ -45,7 +46,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Published crates at **`v0.12.0`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate). |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Published crates at **`v0.13.0`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate). |
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, PR-published catalog of governed capabilities. Live catalog: [registry.traverse-framework.com](https://registry.traverse-framework.com) (counts change; treat the site as source of truth). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — primary authoring on-ramp (`traverse-capability-author`), plus extractor and workflow-planner. Check the registry before authoring; validate against the real CLI. |
@@ -56,7 +57,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 **Platform reach:** five embedder SDKs on one `embedder-api/1.0.0` contract and
 one CI conformance suite — Rust and Web/TypeScript published (crates.io /
-npm `traverse-embedder-web@0.12.0`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
+npm `traverse-embedder-web@0.13.0`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
 Chicory), and .NET (Windows, Wasmtime) ship from `traverse/packages/` and are
 usable in-tree / via reference apps, with public package certification still
 open. Edge is planned; cloud placement is an explicit non-goal for v0.1 — see
@@ -66,8 +67,8 @@ open. Edge is planned; cloud placement is an explicit non-goal for v0.1 — see
 
 | Surface | Status |
 |---|---|
-| JS/TS | Published npm `traverse-embedder-web@0.12.0` |
-| Rust | Published crates.io `traverse-embedder@0.12.0` |
+| JS/TS | Published npm `traverse-embedder-web@0.13.0` |
+| Rust | Published crates.io `traverse-embedder@0.13.0` |
 | AI agents | Published `traverse-mcp` (stdio) |
 | Python | Works today by shelling out to `traverse-cli capability-package execute` — **no Python SDK** |
 | Swift / Kotlin / .NET | In-tree with conformance; not first-class published package consumers yet |
