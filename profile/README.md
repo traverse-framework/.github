@@ -35,9 +35,18 @@ Working implementation of
    · [same-wasm multi-host](https://traverse-framework.com/blog/same-wasm-multi-host.html)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
    — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
+4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
+   apps-not-ready ≠ host-forever):
+   [Q&A](https://traverse-framework.com/questions/where-does-business-logic-live-in-traverse.html)
+   · [blog](https://traverse-framework.com/blog/where-business-logic-lives.html)
+5. Print-support domain pack (living pack; none of `print.*` published yet;
+   apps-not-ready ≠ no packs):
+   [Q&A](https://traverse-framework.com/questions/what-is-the-print-support-capability-pack.html)
+   · [blog](https://traverse-framework.com/blog/print-support-domain-pack.html)
 
 → [traverse-framework.com](https://traverse-framework.com) ·
 [`llms.txt`](https://traverse-framework.com/llms.txt) ·
+[start here](https://traverse-framework.com/blog/what-is-real-today-start-here.html) ·
 start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 ---
