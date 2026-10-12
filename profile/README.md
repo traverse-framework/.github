@@ -15,9 +15,11 @@ Rust→WASM under the hood.
 **clients / embedders**, not different Traverse runtimes. Shipped consumers
 today: JS/TS (`traverse-embedder-web`), Rust (`traverse-embedder`), agents via
 `traverse-mcp`. Python works by shelling out to
-`traverse-cli capability-package execute` — **no Python SDK**. Swift / Kotlin /
-.NET exist in-tree, not as certified public packages. Edge is planned; cloud
-placement is an explicit non-goal for v0.1. Cite
+`traverse-cli capability-package execute` — **no Python SDK**. Swift (xcframework
+on `swift-host-v*` releases), Kotlin (Maven Central
+`com.traverse-framework:traverse-embedder` 0.14.0), and .NET (nuget.org
+`TraverseEmbedder` 0.14.0) are published, pre-1.0, and not Certified. Edge is
+planned; cloud placement is an explicit non-goal for v0.1. Cite
 [what is real today](https://traverse-framework.com/what-is-real-today.html) and
 [Platforms](https://traverse-framework.com/platforms.html) before assuming a
 host.
@@ -33,6 +35,7 @@ Working implementation of
    (deny + trace)
 3. Deny / multi-host direction (blog-first): [agent freestyle → blocked](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
    · [same-wasm multi-host](https://traverse-framework.com/blog/same-wasm-multi-host.html)
+   · [signed exact-ref digits](https://traverse-framework.com/blog/signed-exact-ref-digits.html)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
    — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
 4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
@@ -43,6 +46,9 @@ Working implementation of
    apps-not-ready ≠ no packs):
    [Q&A](https://traverse-framework.com/questions/what-is-the-print-support-capability-pack.html)
    · [blog](https://traverse-framework.com/blog/print-support-domain-pack.html)
+6. Published capability versions are never edited (deprecate / revoke instead):
+   [blog](https://traverse-framework.com/blog/you-dont-edit-a-published-capability.html)
+   · [Q&A](https://traverse-framework.com/questions/what-happens-when-a-capability-version-is-revoked.html)
 
 → [traverse-framework.com](https://traverse-framework.com) ·
 [`llms.txt`](https://traverse-framework.com/llms.txt) ·
@@ -55,7 +61,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Published crates at **`v0.14.0`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate). |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Published crates at **`v0.14.0`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; registry client is the separate `traverse-registry` crate, currently **0.27.0** on crates.io). |
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, PR-published catalog of governed capabilities. Live catalog: [registry.traverse-framework.com](https://registry.traverse-framework.com) (counts change; treat the site as source of truth). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — primary authoring on-ramp (`traverse-capability-author`), plus extractor and workflow-planner. Check the registry before authoring; validate against the real CLI. |
@@ -66,11 +72,13 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 **Platform reach:** five embedder SDKs on one `embedder-api/1.0.0` contract and
 one CI conformance suite — Rust and Web/TypeScript published (crates.io /
-npm `traverse-embedder-web@0.14.0`); Swift (iOS/macOS, `wasmi`), Kotlin (Android,
-Chicory), and .NET (Windows, Wasmtime) ship from `traverse/packages/` and are
-usable in-tree / via reference apps, with public package certification still
-open. Edge is planned; cloud placement is an explicit non-goal for v0.1 — see
-[Platforms](https://traverse-framework.com/platforms.html).
+npm `traverse-embedder-web@0.14.0`); Swift (iOS/macOS, `wasmi`) via
+`swift-host-v*` release assets (currently `swift-host-v0.14.0-4`); Kotlin
+(Android, Chicory) on Maven Central `com.traverse-framework:traverse-embedder`
+0.14.0; .NET (Windows, Wasmtime) on nuget.org `TraverseEmbedder` 0.14.0. All
+three natives are published, pre-1.0, and not Certified under Spec 529 (no host
+is Certified yet). Edge is planned; cloud placement is an explicit non-goal for
+v0.1 — see [Platforms](https://traverse-framework.com/platforms.html).
 
 ### Consumers / clients (honest)
 
@@ -80,7 +88,9 @@ open. Edge is planned; cloud placement is an explicit non-goal for v0.1 — see
 | Rust | Published crates.io `traverse-embedder@0.14.0` |
 | AI agents | Published `traverse-mcp` (stdio) |
 | Python | Works today by shelling out to `traverse-cli capability-package execute` — **no Python SDK** |
-| Swift / Kotlin / .NET | In-tree with conformance; not first-class published package consumers yet |
+| Swift | Published xcframework on `swift-host-v*` releases (currently `swift-host-v0.14.0-4`); pre-1.0, not Certified |
+| Kotlin | Published Maven Central `com.traverse-framework:traverse-embedder` 0.14.0; pre-1.0, not Certified |
+| .NET | Published nuget.org `TraverseEmbedder` 0.14.0; pre-1.0, not Certified |
 
 ---
 
