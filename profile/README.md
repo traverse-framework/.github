@@ -14,7 +14,11 @@ Rust→WASM under the hood.
 **One shared `runtime.wasm`.** Browser, native desktop, CLI, and MCP are
 **clients / embedders**, not different Traverse runtimes. Shipped consumers
 today: JS/TS (`traverse-embedder-web`), Rust (`traverse-embedder`), agents via
-`traverse-mcp`. Python works by shelling out to
+`traverse-mcp`. Web loads the bundle's digest-checked `runtime/runtime.wasm`;
+the Rust embedder links `traverse-runtime` natively and ships no separate
+runtime-WASM artifact — same contract/ABI
+([Q&A](https://traverse-framework.com/questions/does-the-rust-embedder-use-the-same-runtime-wasm.html)).
+Python works by shelling out to
 `traverse-cli capability-package execute` — **no Python SDK**. Swift (xcframework
 on `swift-host-v*` releases), Kotlin (Maven Central
 `com.traverse-framework:traverse-embedder` 0.14.0), and .NET (nuget.org
@@ -36,6 +40,7 @@ Working implementation of
 3. Deny / multi-host direction (blog-first): [agent freestyle → blocked](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
    · [same-wasm multi-host](https://traverse-framework.com/blog/same-wasm-multi-host.html)
    · [signed exact-ref digits](https://traverse-framework.com/blog/signed-exact-ref-digits.html)
+   · [agent MCP exact-ref](https://traverse-framework.com/blog/agent-mcp-exact-ref.html)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
    — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
 4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
@@ -49,6 +54,9 @@ Working implementation of
 6. Published capability versions are never edited (deprecate / revoke instead):
    [blog](https://traverse-framework.com/blog/you-dont-edit-a-published-capability.html)
    · [Q&A](https://traverse-framework.com/questions/what-happens-when-a-capability-version-is-revoked.html)
+7. Model rights are data, not a README:
+   [blog](https://traverse-framework.com/blog/model-rights-are-data.html)
+   · [Q&A](https://traverse-framework.com/questions/does-the-registry-record-model-rights.html)
 
 → [traverse-framework.com](https://traverse-framework.com) ·
 [`llms.txt`](https://traverse-framework.com/llms.txt) ·
