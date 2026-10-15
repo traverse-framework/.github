@@ -81,7 +81,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 **Platform reach:** five embedder SDKs on one `embedder-api/1.0.0` contract and
 one CI conformance suite — Rust and Web/TypeScript published (crates.io /
 npm `traverse-embedder-web@0.15.0`); Swift (iOS/macOS, `wasmi`) via
-`swift-host-v*` release assets (currently `swift-host-v0.15.0`); Kotlin
+`swift-host-v*` release assets (currently `swift-host-v0.15.0-1`, the v0.15.0 rebuild that `Package.swift` on main pins); Kotlin
 (Android, Chicory) on Maven Central `com.traverse-framework:traverse-embedder`
 0.15.0; .NET (Windows, Wasmtime) on nuget.org `TraverseEmbedder` 0.15.0. All
 three natives are published, pre-1.0, and not Certified under Spec 529 (no host
@@ -101,7 +101,7 @@ v0.1 — see [Platforms](https://traverse-framework.com/platforms.html).
 | Rust | Published crates.io `traverse-embedder@0.15.0` |
 | AI agents | Published `traverse-mcp` (stdio) |
 | Python | Works today by shelling out to `traverse-cli capability-package execute` — **no Python SDK** |
-| Swift | Published xcframework on `swift-host-v*` releases (currently `swift-host-v0.15.0`); pre-1.0, not Certified |
+| Swift | Published xcframework on `swift-host-v*` releases (currently `swift-host-v0.15.0-1`, the v0.15.0 rebuild that `Package.swift` on main pins); pre-1.0, not Certified |
 | Kotlin | Published Maven Central `com.traverse-framework:traverse-embedder` 0.15.0; pre-1.0, not Certified |
 | .NET | Published nuget.org `TraverseEmbedder` 0.15.0; pre-1.0, not Certified |
 
