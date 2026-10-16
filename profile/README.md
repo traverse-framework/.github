@@ -88,8 +88,10 @@ three natives are published, pre-1.0, and not Certified under Spec 529 (no host
 is Certified yet). Signed exact-ref model packages now run on every embedder
 (Rust, browser, Swift, Kotlin/Android, .NET) with model rights enforced on
 every host. Apple hosts can opt into a signed Core ML variant under the same
-policy and evidence rules; iPhone governed-path Core ML performance is still
-open ([traverse#1630](https://github.com/traverse-framework/traverse/issues/1630)).
+policy and evidence rules. Governed-path iPhone evidence landed on main after
+v0.15.0 ([traverse#1630](https://github.com/traverse-framework/traverse/issues/1630)):
+BirdNET on one iPhone 14 Pro Max at p95 141 ms per 3 s clip on Core ML. It
+needs an unreleased manifest change, so it is not in a release yet.
 Edge is planned; cloud placement is an explicit non-goal for
 v0.1 — see [Platforms](https://traverse-framework.com/platforms.html).
 
