@@ -41,6 +41,7 @@ Working implementation of
    · [same-wasm multi-host](https://traverse-framework.com/blog/same-wasm-multi-host.html)
    · [signed exact-ref digits](https://traverse-framework.com/blog/signed-exact-ref-digits.html)
    · [agent MCP exact-ref](https://traverse-framework.com/blog/agent-mcp-exact-ref.html)
+   · [catalog model.execute](https://traverse-framework.com/blog/catalog-model-execute.html)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
    — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
 4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
