@@ -103,7 +103,7 @@ v0.1 — see [Platforms](https://traverse-framework.com/platforms.html).
 |---|---|
 | JS/TS | Published npm `traverse-embedder-web@0.15.0` |
 | Rust | Published crates.io `traverse-embedder@0.15.0` |
-| AI agents | Published `traverse-mcp` 0.15.0 on crates.io (stdio, own line-delimited command protocol). No prebuilt `traverse-mcp-v*` binary yet ([#1721](https://github.com/traverse-framework/traverse/issues/1721)); the crates.io build can't start outside a checkout yet ([#1720](https://github.com/traverse-framework/traverse/issues/1720), [Q&A](https://traverse-framework.com/questions/why-does-traverse-mcp-fail-with-catalog-load-failed.html)) |
+| AI agents | Published `traverse-mcp` 0.15.0 on crates.io (stdio, own line-delimited command protocol). No prebuilt `traverse-mcp-v*` binary yet ([#1721](https://github.com/traverse-framework/traverse/issues/1721)); the crates.io 0.15.0 build can't start outside a checkout (fixed on `main`, not yet released: [#1720](https://github.com/traverse-framework/traverse/issues/1720), [Q&A](https://traverse-framework.com/questions/why-does-traverse-mcp-fail-with-catalog-load-failed.html)) |
 | Python | Works today by shelling out to `traverse-cli capability-package execute` — **no Python SDK** |
 | Swift | Published xcframework on `swift-host-v*` releases (currently `swift-host-v0.15.0-1`, the v0.15.0 rebuild that `Package.swift` on main pins); pre-1.0, not Certified |
 | Kotlin | Published Maven Central `com.traverse-framework:traverse-embedder` 0.15.0; pre-1.0, not Certified |
@@ -118,10 +118,11 @@ inside an AI agent a user is talking to — and teams often invent a fourth
 copy for each new host. Copies drift; behavior stops being one thing.
 Traverse’s answer is one governed capability on the hosts that have actually
 shipped (not an unbounded “anywhere,” and not cloud orchestration).
-One open caveat: hosts don't yet agree on the exact input bytes they hand a
-capability, so input-hashing outputs can differ across host types
+One caveat for v0.15.0: hosts don't yet agree on the exact input bytes they hand a
+capability, so input-hashing outputs can differ across host types. Fixed on `main`
+(every host feeds RFC 8785 canonical JSON input), shipping in v0.16.0
 ([#1722](https://github.com/traverse-framework/traverse/issues/1722),
-[Q&A](https://traverse-framework.com/questions/does-the-same-wasm-give-byte-identical-output-on-every-host.html)).
+[write-up](https://traverse-framework.com/blog/same-wasm-two-hashes.html)).
 
 AI coding agents make this sharper: an agent asked to "add the discount logic"
 re-derives it from scratch every session — unversioned, unreviewed, and
