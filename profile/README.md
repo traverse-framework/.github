@@ -44,6 +44,7 @@ Working implementation of
    · [catalog model.execute](https://traverse-framework.com/blog/catalog-model-execute.html)
    · [agent + real traverse-mcp](https://traverse-framework.com/blog/agent-mcp-real-server.html)
    · [one audit fingerprint, every host](https://traverse-framework.com/blog/hash-converges.html)
+   · [v0.16.0: same input, same output, on every host](https://traverse-framework.com/blog/traverse-0-16-0-same-input-same-output.html)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
    — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
 4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
@@ -72,7 +73,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Latest release **[`v0.16.0`](https://github.com/traverse-framework/traverse/releases/tag/v0.16.0)** (Nov 2, 2026; four breaking changes — [upgrade guide](https://traverse-framework.com/questions/how-do-i-upgrade-to-traverse-v0-16-0.html)). Crates on crates.io are still at **`0.15.0`** as of Nov 2 (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; 0.16.0 crates not published yet — build from the tag with Rust ≥ 1.95). v0.16.0 moves the separate `traverse-registry` client crate to **0.29.0** (on crates.io). |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Latest release **[`v0.16.0`](https://github.com/traverse-framework/traverse/releases/tag/v0.16.0)** (Nov 2, 2026; four breaking changes — [upgrade guide](https://traverse-framework.com/questions/how-do-i-upgrade-to-traverse-v0-16-0.html)). All six crates are on crates.io at **`0.16.0`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; published Nov 2; Rust ≥ 1.95). Release story: [same input, same output, on every host](https://traverse-framework.com/blog/traverse-0-16-0-same-input-same-output.html). v0.16.0 moves the separate `traverse-registry` client crate to **0.29.0** (on crates.io). |
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, PR-published catalog of governed capabilities. Live catalog: [registry.traverse-framework.com](https://registry.traverse-framework.com) (counts change; treat the site as source of truth). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — primary authoring on-ramp (`traverse-capability-author`), plus extractor and workflow-planner. Check the registry before authoring; validate against the real CLI. |
@@ -103,8 +104,8 @@ v0.1 — see [Platforms](https://traverse-framework.com/platforms.html).
 | Surface | Status |
 |---|---|
 | JS/TS | Published npm `traverse-embedder-web@0.16.0` |
-| Rust | Published crates.io `traverse-embedder@0.15.0` (0.16.0 crates not on crates.io yet as of Nov 2; build from the `v0.16.0` tag) |
-| AI agents | **`traverse-mcp` v0.16.0 released**: prebuilt binaries for four targets with `SHA256SUMS` and build-provenance attestations on [`traverse-mcp-v0.16.0`](https://github.com/traverse-framework/traverse/releases/tag/traverse-mcp-v0.16.0) — no Rust needed (`traverse-mcp sync`, `prepare-cache`, `stdio --cache`; [setup](https://traverse-framework.com/docs/guides/mcp-setup.html)). stdio, own line-delimited command protocol. The catalog_load_failed fix ([#1720](https://github.com/traverse-framework/traverse/issues/1720)) and binaries ([#1721](https://github.com/traverse-framework/traverse/issues/1721)) shipped in v0.16.0. crates.io `traverse-mcp` is still 0.15.0, which can't start outside a checkout ([Q&A](https://traverse-framework.com/questions/why-does-traverse-mcp-fail-with-catalog-load-failed.html)) |
+| Rust | Published crates.io `traverse-embedder@0.16.0` (Rust ≥ 1.95) |
+| AI agents | **`traverse-mcp` v0.16.0 released**: prebuilt binaries for four targets with `SHA256SUMS` and build-provenance attestations on [`traverse-mcp-v0.16.0`](https://github.com/traverse-framework/traverse/releases/tag/traverse-mcp-v0.16.0) — no Rust needed (`traverse-mcp sync`, `prepare-cache`, `stdio --cache`; [setup](https://traverse-framework.com/docs/guides/mcp-setup.html)). stdio, own line-delimited command protocol. The catalog_load_failed fix ([#1720](https://github.com/traverse-framework/traverse/issues/1720)) and binaries ([#1721](https://github.com/traverse-framework/traverse/issues/1721)) shipped in v0.16.0. crates.io `traverse-mcp` 0.16.0 carries the same fix; 0.15.0 can't start outside a checkout ([Q&A](https://traverse-framework.com/questions/why-does-traverse-mcp-fail-with-catalog-load-failed.html)) |
 | Python | Works today by shelling out to `traverse-cli capability-package execute` — **no Python SDK** |
 | Swift | Published xcframework on `swift-host-v*` releases (currently `swift-host-v0.16.0`; the v0.16.0 tag's `Package.swift` still pins `swift-host-v0.15.0-1`, `main` pins v0.16.0); pre-1.0, not Certified |
 | Kotlin | Published Maven Central `com.traverse-framework:traverse-embedder` 0.16.0; pre-1.0, not Certified |
@@ -123,7 +124,9 @@ Before v0.16.0, hosts didn't agree on the exact input bytes they handed a
 capability, so input-hashing outputs could differ across host types. v0.16.0
 fixes this (every host feeds RFC 8785 canonical JSON input; a breaking change)
 ([#1722](https://github.com/traverse-framework/traverse/issues/1722),
-[write-up](https://traverse-framework.com/blog/same-wasm-two-hashes.html)).
+[write-up](https://traverse-framework.com/blog/same-wasm-two-hashes.html);
+rerun on the v0.16.0 release packages:
+[same input, same output](https://traverse-framework.com/blog/traverse-0-16-0-same-input-same-output.html)).
 
 AI coding agents make this sharper: an agent asked to "add the discount logic"
 re-derives it from scratch every session — unversioned, unreviewed, and
