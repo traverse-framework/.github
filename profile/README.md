@@ -21,8 +21,8 @@ runtime-WASM artifact — same contract/ABI
 Python works by shelling out to
 `traverse-cli capability-package execute` — **no Python SDK**. Swift (xcframework
 on `swift-host-v*` releases), Kotlin (Maven Central
-`com.traverse-framework:traverse-embedder` 0.16.1), and .NET (nuget.org
-`TraverseEmbedder` 0.16.1) are published, pre-1.0, and not Certified. Edge is
+`com.traverse-framework:traverse-embedder` 0.16.2), and .NET (nuget.org
+`TraverseEmbedder` 0.16.2) are published, pre-1.0, and not Certified. Edge is
 planned; cloud placement is an explicit non-goal for v0.1. Cite
 [what is real today](https://traverse-framework.com/what-is-real-today.html) and
 [Platforms](https://traverse-framework.com/platforms.html) before assuming a
@@ -74,7 +74,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 | Repo | What it is |
 |---|---|
-| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Latest release **[`v0.16.1`](https://github.com/traverse-framework/traverse/releases/tag/v0.16.1)** (Nov 3, 2026; additive patch: catalog `model.execute@1.0.0` runs on the published Browser and Node packages, [proof Q&A](https://traverse-framework.com/questions/does-catalog-model-execute-run-on-published-traverse-packages.html), [announcement](https://github.com/orgs/traverse-framework/discussions/1787)). v0.16.0 (Nov 2) had four breaking changes ([upgrade guide](https://traverse-framework.com/questions/how-do-i-upgrade-to-traverse-v0-16-0.html)). All six crates are on crates.io at **`0.16.1`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; published Nov 3; Rust ≥ 1.95). Release story: [same input, same output, on every host](https://traverse-framework.com/blog/traverse-0-16-0-same-input-same-output.html). The separate `traverse-registry` client crate is **0.29.0** on crates.io. |
+| [`traverse`](https://github.com/traverse-framework/traverse) | Core runtime, CLI, contracts, and MCP surface. Discover a governed capability → execute known behavior → produce a trace. Latest release **[`v0.16.2`](https://github.com/traverse-framework/traverse/releases/tag/v0.16.2)** (Nov 4, 2026; additive patch: application manifests can invoke a declared host connector, [Q&A](https://traverse-framework.com/questions/can-a-traverse-application-manifest-invoke-a-host-connector.html), [announcement](https://github.com/orgs/traverse-framework/discussions/1804)). v0.16.1 (Nov 3) made catalog `model.execute@1.0.0` run on the published Browser and Node packages ([proof Q&A](https://traverse-framework.com/questions/does-catalog-model-execute-run-on-published-traverse-packages.html), [announcement](https://github.com/orgs/traverse-framework/discussions/1787)). v0.16.0 (Nov 2) had four breaking changes ([upgrade guide](https://traverse-framework.com/questions/how-do-i-upgrade-to-traverse-v0-16-0.html)). All six crates are on crates.io at **`0.16.2`** (`traverse-contracts`, `traverse-runtime`, `traverse-embedder`, `traverse-cli-rs`, `traverse-mcp`, `traverse-expedition-wasm`; published Nov 4; Rust ≥ 1.95). The shared `runtime.wasm` is a release asset on [`runtime-wasm-v0.16.2`](https://github.com/traverse-framework/traverse/releases/tag/runtime-wasm-v0.16.2) ([Q&A](https://traverse-framework.com/questions/where-does-bundleembedder-get-runtime-wasm.html)). Release story: [same input, same output, on every host](https://traverse-framework.com/blog/traverse-0-16-0-same-input-same-output.html). The separate `traverse-registry` client crate is **0.31.0** on crates.io. |
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, PR-published catalog of governed capabilities. Live catalog: [registry.traverse-framework.com](https://registry.traverse-framework.com) (counts change; treat the site as source of truth). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — primary authoring on-ramp (`traverse-capability-author`), plus extractor and workflow-planner. Check the registry before authoring; validate against the real CLI. |
@@ -85,10 +85,10 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 
 **Platform reach:** five embedder SDKs on one `embedder-api/1.0.0` contract and
 one CI conformance suite — Rust and Web/TypeScript published (crates.io /
-npm `traverse-embedder-web@0.16.1`); Swift (iOS/macOS, `wasmi`) via
-`swift-host-v*` release assets (currently `swift-host-v0.16.1`; the v0.16.1 tag's `Package.swift` pins `swift-host-v0.16.0`, and `main` pins `swift-host-v0.16.1`); Kotlin
+npm `traverse-embedder-web@0.16.2`); Swift (iOS/macOS, `wasmi`) via
+`swift-host-v*` release assets (currently `swift-host-v0.16.2`; the v0.16.2 tag's `Package.swift` pins `swift-host-v0.16.1`, and `main` pins `swift-host-v0.16.2`); Kotlin
 (Android, Chicory) on Maven Central `com.traverse-framework:traverse-embedder`
-0.16.1; .NET (Windows, Wasmtime) on nuget.org `TraverseEmbedder` 0.16.1. All
+0.16.2; .NET (Windows, Wasmtime) on nuget.org `TraverseEmbedder` 0.16.2. All
 three natives are published, pre-1.0, and not Certified under Spec 529 (no host
 is Certified yet). Signed exact-ref model packages now run on every embedder
 (Rust, browser, Swift, Kotlin/Android, .NET) with model rights enforced on
@@ -104,13 +104,13 @@ v0.1 — see [Platforms](https://traverse-framework.com/platforms.html).
 
 | Surface | Status |
 |---|---|
-| JS/TS | Published npm `traverse-embedder-web@0.16.1` (catalog `model.execute` via `activateMediatedConnector` + `submitAsync`) |
-| Rust | Published crates.io `traverse-embedder@0.16.1` (Rust ≥ 1.95) |
-| AI agents | **`traverse-mcp` v0.16.1 released**: prebuilt binaries for four targets with `SHA256SUMS` and build-provenance attestations on [`traverse-mcp-v0.16.1`](https://github.com/traverse-framework/traverse/releases/tag/traverse-mcp-v0.16.1) — no Rust needed (`traverse-mcp sync`, `prepare-cache`, `stdio --cache`; [setup](https://traverse-framework.com/docs/guides/mcp-setup.html)). stdio, own line-delimited command protocol. The catalog_load_failed fix ([#1720](https://github.com/traverse-framework/traverse/issues/1720)) and binaries ([#1721](https://github.com/traverse-framework/traverse/issues/1721)) shipped in v0.16.0. crates.io `traverse-mcp` 0.16.x carries the same fix; 0.15.0 can't start outside a checkout ([Q&A](https://traverse-framework.com/questions/why-does-traverse-mcp-fail-with-catalog-load-failed.html)) |
+| JS/TS | Published npm `traverse-embedder-web@0.16.2` (catalog `model.execute` via `activateMediatedConnector` + `submitAsync`) |
+| Rust | Published crates.io `traverse-embedder@0.16.2` (Rust ≥ 1.95) |
+| AI agents | **`traverse-mcp` v0.16.2 released**: prebuilt binaries for four targets with `SHA256SUMS` and build-provenance attestations on [`traverse-mcp-v0.16.2`](https://github.com/traverse-framework/traverse/releases/tag/traverse-mcp-v0.16.2) — no Rust needed (`traverse-mcp sync`, `prepare-cache`, `stdio --cache`; [setup](https://traverse-framework.com/docs/guides/mcp-setup.html)). stdio, own line-delimited command protocol. The catalog_load_failed fix ([#1720](https://github.com/traverse-framework/traverse/issues/1720)) and binaries ([#1721](https://github.com/traverse-framework/traverse/issues/1721)) shipped in v0.16.0. crates.io `traverse-mcp` 0.16.x carries the same fix; 0.15.0 can't start outside a checkout ([Q&A](https://traverse-framework.com/questions/why-does-traverse-mcp-fail-with-catalog-load-failed.html)) |
 | Python | Works today by shelling out to `traverse-cli capability-package execute` — **no Python SDK** |
-| Swift | Published xcframework on `swift-host-v*` releases (currently `swift-host-v0.16.1`; the v0.16.1 tag's `Package.swift` pins `swift-host-v0.16.0`, `main` pins v0.16.1); pre-1.0, not Certified |
-| Kotlin | Published Maven Central `com.traverse-framework:traverse-embedder` 0.16.1; pre-1.0, not Certified |
-| .NET | Published nuget.org `TraverseEmbedder` 0.16.1; pre-1.0, not Certified |
+| Swift | Published xcframework on `swift-host-v*` releases (currently `swift-host-v0.16.2`; the v0.16.2 tag's `Package.swift` pins `swift-host-v0.16.1`, `main` pins v0.16.2); pre-1.0, not Certified |
+| Kotlin | Published Maven Central `com.traverse-framework:traverse-embedder` 0.16.2; pre-1.0, not Certified |
+| .NET | Published nuget.org `TraverseEmbedder` 0.16.2; pre-1.0, not Certified |
 
 ---
 
