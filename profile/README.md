@@ -47,6 +47,7 @@ Working implementation of
    · [v0.16.0: same input, same output, on every host](https://traverse-framework.com/blog/traverse-0-16-0-same-input-same-output.html)
    · [one model capability, three published hosts, same answer](https://traverse-framework.com/blog/model-execute-on-published-packages.html)
    · [five hosts, one set of rules for compatible capabilities](https://traverse-framework.com/blog/compatible-lifecycle-one-rulebook.html) (on main, not released)
+   · [We measured our own LLM-assisted capabilities. The bar was not met.](https://traverse-framework.com/blog/we-measured-our-llm-assisted-capabilities.html) (registry evaluation, bar not met; not a release)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
    — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
 4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
