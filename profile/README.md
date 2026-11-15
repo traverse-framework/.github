@@ -48,6 +48,8 @@ Working implementation of
    · [one model capability, three published hosts, same answer](https://traverse-framework.com/blog/model-execute-on-published-packages.html)
    · [five hosts, one set of rules for compatible capabilities](https://traverse-framework.com/blog/compatible-lifecycle-one-rulebook.html) (on main, not released)
    · [We measured our own LLM-assisted capabilities. The bar was not met.](https://traverse-framework.com/blog/we-measured-our-llm-assisted-capabilities.html) (registry evaluation, bar not met; not a release)
+   · [catalog model.execute on the published Browser and Node path](https://traverse-framework.com/blog/product-path-model-execute.html) (Nov 6 weekly demo, v0.16.2)
+   · [a governed model call you can actually stop](https://traverse-framework.com/blog/kill-switch.html) (Nov 13 weekly demo, v0.17.0 tag tree; v0.17.1 not published yet)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
    — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
 4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
