@@ -1,0 +1,76 @@
+# Reusable cross-tool review-record check (Decision 133 / .github#56).
+# Warning mode in governance 1.3.x: missing or failing records annotate a
+# warning and the job still passes.
+name: reusable-review-record
+
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  review-record:
+    name: review-record
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Fetch PR metadata (bounded)
+        id: meta
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/review-record
+          # Comments: newest first, capped.
+          gh api --paginate \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments?per_page=50" \
+            --jq '.[0:100]' > /tmp/review-record/comments.json
+          # Label names
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/${PR_NUMBER}/labels" \
+            --jq '[.[].name]' > /tmp/review-record/labels.json
+          # Timeline events that applied needs-review (bounded pages)
+          gh api --paginate \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/${PR_NUMBER}/timeline" \
+            --jq '[.[] | select(.event == "labeled" and .label.name == "needs-review") | {event, label_name: .label.name, created_at}] | .[0:20]' \
+            > /tmp/review-record/label-events.json
+          # Changed files (names only)
+          gh api --paginate \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/pulls/${PR_NUMBER}/files?per_page=100" \
+            --jq '.[].filename' > /tmp/review-record/files.txt
+
+      - name: Run review-record check (warning mode)
+        env:
+          REVIEW_RECORD_COMMENTS_JSON: /tmp/review-record/comments.json
+          REVIEW_RECORD_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REVIEW_RECORD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          REVIEW_RECORD_AUTHOR_LOGIN: ${{ github.event.pull_request.user.login }}
+          REVIEW_RECORD_CHANGED_FILES: ${{ '' }}
+          REVIEW_RECORD_LABELS_JSON: ${{ '' }}
+          REVIEW_RECORD_WARN_ONLY: "1"
+        run: |
+          set -euo pipefail
+          # Resolve the check script: prefer the calling repo's vendored copy,
+          # else fetch this governance repo's canonical script at the adopted pin.
+          if [[ -x scripts/ci/review_record_check.sh ]]; then
+            script=scripts/ci/review_record_check.sh
+          else
+            ver="$(cat .governance-version)"
+            curl -fsSL \
+              "https://raw.githubusercontent.com/traverse-framework/.github/${ver}/scripts/ci/review_record_check.sh" \
+              -o /tmp/review_record_check.sh
+            chmod +x /tmp/review_record_check.sh
+            script=/tmp/review_record_check.sh
+          fi
+          export REVIEW_RECORD_CHANGED_FILES="$(cat /tmp/review-record/files.txt)"
+          export REVIEW_RECORD_LABELS_JSON="$(cat /tmp/review-record/labels.json)"
+          export REVIEW_RECORD_LABEL_EVENTS_JSON="$(cat /tmp/review-record/label-events.json)"
+          bash "$script"

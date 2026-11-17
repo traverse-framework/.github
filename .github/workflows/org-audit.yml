@@ -32,6 +32,13 @@ jobs:
           echo "failed=$?" >> "$GITHUB_OUTPUT"
           cat report.md >> "$GITHUB_STEP_SUMMARY"
 
+
+      - name: Development health report
+        env:
+          GH_TOKEN: ${{ secrets.ORG_AUDIT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          bash scripts/org/dev_health_report.sh | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Open or update compliance issue
         if: steps.audit.outputs.failed != '0'
         env:

@@ -4,6 +4,27 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.3.0] - 2026-11-17
+
+### Added
+
+- Cross-tool review rule (Decision 133 / #56): record format, rubric, and
+  warning-mode reusable check `reusable-review-record.yml` plus
+  `scripts/ci/review_record_check.sh` with fixture tests. `needs-review`
+  label is created by `rollout_governance.sh`.
+- Shared claim/release scripts `scripts/agent/claim.sh` and
+  `scripts/agent/release.sh`, plus `scripts/org/stale_claims.sh` (#57).
+- Skill single-source layout `.agents/skills/` with
+  `scripts/agent/sync_skills.sh` and `skills_drift_check.sh` (#58).
+- Org audit columns for `AGENTS.md` and the `needs-review` label (#59).
+- Weekly development-health report `scripts/org/dev_health_report.sh`
+  wired into `org-audit.yml` (#60).
+
+### Changed
+
+- `docs/ai-agent-hardening.md` and `docs/quality-standards.md` document the
+  Decision 133 review rule without duplicating the rubric.
+
 ## [1.2.1] - 2026-07-27
 
 ### Fixed

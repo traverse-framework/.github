@@ -6,7 +6,23 @@ on:
 
 permissions:
   contents: read
+  # reusable-review-record.yml reads PR comments, labels and files; a called
+  # workflow cannot request more than its caller grants.
+  pull-requests: read
 
 jobs:
   baseline:
     uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@bootstrap-governance
+
+  review-record:
+    # Warning-mode Decision 133 check (.github#56). Missing records do not fail.
+    uses: ./.github/workflows/reusable-review-record.yml
+
+  review-record-tests:
+    name: review-record-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run review-record fixture tests
+        run: bash scripts/ci/review_record_check_test.sh
+
