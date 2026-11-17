@@ -1,0 +1,17 @@
+{
+  "org": "traverse-framework",
+  "days": 7,
+  "max_items_per_query": 1000,
+  "repos": [
+    { "name": "traverse", "ci_workflow": "ci.yml" },
+    { "name": "registry", "ci_workflow": "ci.yml" },
+    { "name": "reference-apps", "ci_workflow": "ci.yml" },
+    { "name": "website", "ci_workflow": "test.yml" }
+  ],
+  "thresholds": {
+    "ci_median_minutes": 30,
+    "ci_p90_minutes": 60,
+    "ci_failure_pct": 20,
+    "fix_share_pct": 15
+  }
+}
