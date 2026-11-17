@@ -42,7 +42,7 @@ for repo in "${repos[@]}"; do
   { has_file "$repo" "CLAUDE.md" || has_file "$repo" "AGENTS.md"; } && agent="yes"
   agents_md="no"; has_file "$repo" "AGENTS.md" && agents_md="yes"
   needs_review="no"
-  if gh label list --repo "$ORG/$repo" --json name --jq '.[].name' 2>/dev/null | grep -qx "needs-review"; then
+  if gh label list --repo "$ORG/$repo" --limit 500 --json name --jq '.[].name' 2>/dev/null | grep -qx "needs-review"; then
     needs_review="yes"
   fi
 
