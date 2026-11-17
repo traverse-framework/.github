@@ -6,6 +6,9 @@ on:
 
 permissions:
   contents: read
+  # reusable-review-record.yml reads PR comments, labels and files; a called
+  # workflow cannot request more than its caller grants.
+  pull-requests: read
 
 jobs:
   baseline:
