@@ -4,6 +4,15 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.3.1] - 2026-11-17
+
+### Fixed
+
+- `scripts/ci/review_record_check.sh` only accepts a review record whose
+  header opens the comment, as `docs/ai-agent-hardening.md` specifies. A
+  header quoted later in a comment no longer counts as a review. Found by
+  the Codex review of traverse-framework/registry#677.
+
 ## [1.3.0] - 2026-11-17
 
 ### Added
