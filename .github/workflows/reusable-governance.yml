@@ -102,3 +102,14 @@ jobs:
             echo "::error::repo has $count approved specs and vendors scripts/ci/spec_alignment_check.sh, but no workflow in .github/workflows runs it"
             exit 1
           fi
+
+      - name: Skill copy drift (warning only)
+        run: |
+          if [ -x scripts/agent/skills_drift_check.sh ]; then
+            if ! bash scripts/agent/skills_drift_check.sh; then
+              echo "::warning::generated Claude/Cursor skill copies drifted from .agents/skills — run scripts/agent/sync_skills.sh (.github#58)"
+            fi
+          else
+            echo "no skills_drift_check.sh in this repo; skipping"
+          fi
+

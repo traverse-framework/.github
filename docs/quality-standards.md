@@ -36,6 +36,7 @@ The default validation flow should include:
 - coverage checks for core logic
 - dependency/security checks
 - required work-traceability through issue, project item, and pull request linkage where applicable
+- cross-tool review record for full-CI PRs (Decision 133; warning mode in governance 1.3.x — see `docs/ai-agent-hardening.md`)
 - ticket-level definition of done and validation instructions for meaningful work
 
 Spec-alignment gate implementation (vendored into each consuming repo at the same relative path):

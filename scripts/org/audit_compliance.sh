@@ -26,8 +26,8 @@ echo "# Governance compliance report — $ORG"
 echo
 echo "_Generated $(date -u +%Y-%m-%dT%H:%M:%SZ) against governance $(cat "$(dirname "$0")/../../CHANGELOG.md" 2>/dev/null | grep -om1 '\[[0-9.]*\]' | tr -d '[]' || echo '?')_"
 echo
-echo "| repo | version pin | dependabot | CLA wf | governance wf | agent docs | ruleset |"
-echo "|---|---|---|---|---|---|---|"
+echo "| repo | version pin | dependabot | CLA wf | governance wf | agent docs | AGENTS.md | needs-review label | ruleset |"
+echo "|---|---|---|---|---|---|---|---|---|"
 
 repos=()
 while IFS= read -r r; do repos+=("$r"); done \
@@ -40,6 +40,11 @@ for repo in "${repos[@]}"; do
   gov="no"; has_file "$repo" ".github/workflows/governance.yml" && gov="yes"
   agent="no"
   { has_file "$repo" "CLAUDE.md" || has_file "$repo" "AGENTS.md"; } && agent="yes"
+  agents_md="no"; has_file "$repo" "AGENTS.md" && agents_md="yes"
+  needs_review="no"
+  if gh label list --repo "$ORG/$repo" --json name --jq '.[].name' 2>/dev/null | grep -qx "needs-review"; then
+    needs_review="yes"
+  fi
 
   ruleset_cell="?"
   rulesets="$(gh api "repos/$ORG/$repo/rulesets" --jq '.[].name' 2>/dev/null || echo "__unreadable__")"
@@ -47,9 +52,17 @@ for repo in "${repos[@]}"; do
     if echo "$rulesets" | grep -qx "$RULESET_NAME"; then ruleset_cell="✅"; else ruleset_cell="❌"; FAILURES=$((FAILURES + 1)); fi
   fi
 
-  echo "| $repo | $(check "$ver") | $(check "$dep") | $(check "$cla") | $(check "$gov") | $(check "$agent") | $ruleset_cell |"
+  echo "| $repo | $(check "$ver") | $(check "$dep") | $(check "$cla") | $(check "$gov") | $(check "$agent") | $(check "$agents_md") | $(check "$needs_review") | $ruleset_cell |"
 done
 
+echo
+echo "## Stale agent claims"
+echo
+if [ -x "$(dirname "$0")/stale_claims.sh" ]; then
+  "$(dirname "$0")/stale_claims.sh" "$ORG" || true
+else
+  echo "_stale_claims.sh not present_"
+fi
 echo
 if [ "$FAILURES" -gt 0 ]; then
   echo "**$FAILURES check(s) failing.** Run \`scripts/org/rollout_governance.sh\` and \`scripts/org/apply_rulesets.sh\` from traverse-framework/.github to remediate."

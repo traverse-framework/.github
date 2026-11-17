@@ -221,6 +221,9 @@ EOF
     echo "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
   } >> "$body_file"
 
+  # Decision 133 / .github#56: every org repo gets the review-queue label.
+  gh label create "needs-review" --repo "$ORG/$repo" --color "FBCA04"     --description "Full-CI PR waiting for an independent cross-tool review"     2>/dev/null || true
+
   gh pr create --repo "$ORG/$repo" \
     --head "$BRANCH" \
     --title "Adopt org governance $VERSION" \

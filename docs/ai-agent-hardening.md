@@ -78,3 +78,50 @@ Minimality never justifies violating a repo's architecture boundary (e.g. busine
 - Duplicate this repo's governance content into a consuming repo instead of pointing to a pinned version
 - Duplicate content between CLAUDE.md and AGENTS.md, or snapshot registry/board state into either
 - Bypass the spec-alignment or coverage gates to make a PR pass
+
+## Cross-Tool Review Before Merge (Decision 133)
+
+Governed-surface PRs — exactly those the repo's change classifier sends to
+full CI — need an independent review record before merge. In governance
+1.3.x the reusable check warns when the record is missing; a later release
+makes it required.
+
+**Independence.** A different tool than the author (from the branch prefix
+`claude/`, `codex/`, or `cursor/`) posts the record. If `needs-review` has
+been on the PR for at least 4 hours, the same tool may post a fallback
+record with `fallback: true`.
+
+**Record format.** One PR comment whose body starts with this HTML comment
+header (fields are fixed; the rest of the comment is free-form rubric notes):
+
+```
+<!-- traverse-review-record
+tool: codex
+commit: <40-char lowercase or mixed hex SHA of the head reviewed>
+verdict: pass
+fallback: false
+-->
+```
+
+`verdict` is `pass` or `changes-requested`. The check reads the newest
+record for the current head SHA only.
+
+**Rubric (what the reviewer checks; CI already covers build/lint/coverage/spec-alignment).**
+
+1. Diff matches the declared governing spec and contract.
+2. Failure modes and error paths are explicit.
+3. No gate was weakened to make the PR pass.
+4. The change is the minimum needed for the issue.
+5. Tests assert behavior, not only coverage numbers.
+
+**Findings loop.** `changes-requested` blocks (or warns, in 1.3.x). The
+author fixes or rebuts; the same reviewer re-checks the new head. After one
+unresolved round, add `needs-enrico`.
+
+**Exemptions.** Dependabot PRs, and version-only release PRs whose changed
+paths are only version/pin/changelog files, are exempt. Human-authored PRs
+use maintainer review instead of this record.
+
+**Queue.** Authors add `needs-review`. Other tools' ops loops pick that
+queue. Do not merge your own governed-surface PR without a passing record
+once the check is required.
