@@ -13,7 +13,7 @@ jobs:
 
   review-record:
     # Warning-mode Decision 133 check (.github#56). Missing records do not fail.
-    uses: traverse-framework/.github/.github/workflows/reusable-review-record.yml@bootstrap-governance
+    uses: ./.github/workflows/reusable-review-record.yml
 
   review-record-tests:
     name: review-record-tests
