@@ -26,3 +26,10 @@ jobs:
       - name: Run review-record fixture tests
         run: bash scripts/ci/review_record_check_test.sh
 
+  dev-health-tests:
+    name: dev-health-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run dev-health report fixture tests
+        run: python3 scripts/org/dev_health_report_test.py
