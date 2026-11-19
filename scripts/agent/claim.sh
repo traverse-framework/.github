@@ -1,60 +1,79 @@
 #!/usr/bin/env bash
-# Claim a Ready Project 1 issue for one agent (.github#57).
-# Usage: scripts/agent/claim.sh <issue-number> <agent> [--repo OWNER/REPO] [--project-item-id ID]
+# Claim a Ready issue for one agent (.github#57).
+#
+#   scripts/agent/claim.sh <issue-number> <claude|codex|cursor> [--repo OWNER/REPO] [--config PATH] [--dry-run]
+#
+# Checks, in order, and changes nothing if any fails:
+#   1. the issue is open;
+#   2. its item on the configured Project has Status "Ready";
+#   3. it carries no agent:* label;
+#   4. no remote branch from any tool matches */issue-<N>-*;
+#   5. no open pull request has a head branch matching */issue-<N>-*.
+# Then it adds agent:<tool>, sets the Project item to "In Progress", and posts
+# an audit comment naming the tool, the time and the suggested branch.
+#
+# Project and field ids come from the per-repo config file (default
+# .agent-claim.json at the repository root, or $AGENT_CLAIM_CONFIG); see
+# docs/ai-agent-hardening.md. --dry-run runs every check and prints what it
+# would do.
 set -euo pipefail
 
-ISSUE="${1:?usage: claim.sh <issue> <agent> [--repo OWNER/REPO]}"
-AGENT="${2:?usage: claim.sh <issue> <agent> [--repo OWNER/REPO]}"
-shift 2
-REPO="${TRAVERSE_CLAIM_REPO:-traverse-framework/traverse}"
-ITEM_ID="${TRAVERSE_PROJECT_ITEM_ID:-}"
-PROJECT_ID="${TRAVERSE_PROJECT_ID:-PVT_kwDOEbiBt84Bbyp1}"
-STATUS_FIELD="${TRAVERSE_STATUS_FIELD_ID:-PVTSSF_lADOEbiBt84Bbyp1zhWglqM}"
-IN_PROGRESS_OPTION="${TRAVERSE_IN_PROGRESS_OPTION_ID:-47fc9ee4}"
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/agent/claim_lib.sh
+source "${here}/claim_lib.sh"
 
+usage="usage: claim.sh <issue> <claude|codex|cursor> [--repo OWNER/REPO] [--config PATH] [--dry-run]"
+[[ $# -ge 2 ]] || claim_die 2 "${usage}"
+ISSUE="$1"
+AGENT="$2"
+shift 2
+REPO=""
+CONFIG="${AGENT_CLAIM_CONFIG:-}"
+DRY_RUN=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --repo) REPO="$2"; shift 2 ;;
-    --project-item-id) ITEM_ID="$2"; shift 2 ;;
-    *) echo "unknown arg: $1" >&2; exit 2 ;;
+    --repo) REPO="${2:?--repo needs OWNER/REPO}"; shift 2 ;;
+    --config) CONFIG="${2:?--config needs a path}"; shift 2 ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    *) claim_die 2 "unknown argument: $1 (${usage})" ;;
   esac
 done
 
-case "$AGENT" in
+[[ "${ISSUE}" =~ ^[0-9]+$ ]] || claim_die 2 "issue must be a number: ${ISSUE}"
+case "${AGENT}" in
   claude|codex|cursor) ;;
-  *) echo "agent must be claude, codex, or cursor" >&2; exit 2 ;;
+  *) claim_die 2 "agent must be claude, codex or cursor" ;;
 esac
 
-labels_json="$(gh issue view "$ISSUE" --repo "$REPO" --json labels,state --jq '{state, labels: [.labels[].name]}')"
-state="$(jq -r .state <<<"$labels_json")"
-if [[ "$state" != "OPEN" ]]; then
-  echo "issue #$ISSUE is $state" >&2
-  exit 1
-fi
-if jq -e '.labels[] | select(startswith("agent:"))' <<<"$labels_json" >/dev/null; then
-  echo "issue #$ISSUE already has an agent:* label" >&2
-  jq -r '.labels[] | select(startswith("agent:"))' <<<"$labels_json" >&2
-  exit 1
-fi
+claim_load_config "${CONFIG}" "${REPO}"
 
-owner="${REPO%%/*}"
-name="${REPO#*/}"
-if git ls-remote --heads "https://github.com/${REPO}.git" 2>/dev/null | grep -E "refs/heads/[^/]+/issue-${ISSUE}-" >/dev/null; then
-  echo "a remote issue-${ISSUE}-* branch already exists" >&2
-  git ls-remote --heads "https://github.com/${REPO}.git" | grep -E "refs/heads/[^/]+/issue-${ISSUE}-" >&2
-  exit 1
-fi
-if gh pr list --repo "$REPO" --state open --json headRefName --jq '.[].headRefName' | grep -E "(^|/)[^/]+/issue-${ISSUE}-" >/dev/null; then
-  echo "an open PR already exists for issue-${ISSUE}" >&2
-  exit 1
-fi
+state="$(gh issue view "${ISSUE}" --repo "${CLAIM_REPO}" --json state --jq .state)"
+[[ "${state}" == "OPEN" ]] || claim_die 1 "${CLAIM_REPO}#${ISSUE} is ${state}"
 
-gh issue edit "$ISSUE" --repo "$REPO" --add-label "agent:${AGENT}"
-if [[ -n "$ITEM_ID" ]]; then
-  gh project item-edit --project-id "$PROJECT_ID" --id "$ITEM_ID" \
-    --field-id "$STATUS_FIELD" --single-select-option-id "$IN_PROGRESS_OPTION"
-fi
+claim_project_item "${ISSUE}"
+[[ -n "${CLAIM_ITEM_ID}" ]] || claim_die 1 "${CLAIM_REPO}#${ISSUE} has no item on the configured Project"
+[[ "${CLAIM_ITEM_STATUS}" == "Ready" ]] ||
+  claim_die 1 "${CLAIM_REPO}#${ISSUE} is '${CLAIM_ITEM_STATUS:-no status}' on the Project, not Ready"
+
+existing="$(gh issue view "${ISSUE}" --repo "${CLAIM_REPO}" --json labels \
+  --jq '[.labels[].name | select(startswith("agent:"))] | join(" ")')"
+[[ -z "${existing}" ]] || claim_die 1 "${CLAIM_REPO}#${ISSUE} is already claimed: ${existing}"
+
+branches="$(claim_issue_branches "${ISSUE}")"
+[[ -z "${branches}" ]] || claim_die 1 "a branch for issue ${ISSUE} already exists: ${branches}"
+
+prs="$(claim_issue_prs "${ISSUE}")"
+[[ -z "${prs}" ]] || claim_die 1 "an open pull request for issue ${ISSUE} already exists: ${prs}"
 
 branch="${AGENT}/issue-${ISSUE}-work"
-gh issue comment "$ISSUE" --repo "$REPO" --body "Claimed by \`agent:${AGENT}\` at $(date -u +%Y-%m-%dT%H:%MZ). Suggested branch: \`${branch}\`."
-echo "claimed #$ISSUE as agent:${AGENT}"
+if [[ "${DRY_RUN}" -eq 1 ]]; then
+  echo "dry run: ${CLAIM_REPO}#${ISSUE} can be claimed by agent:${AGENT}"
+  echo "would add label agent:${AGENT}, set Project item ${CLAIM_ITEM_ID} to In Progress, and comment (branch ${branch})"
+  exit 0
+fi
+
+gh issue edit "${ISSUE}" --repo "${CLAIM_REPO}" --add-label "agent:${AGENT}" >/dev/null
+claim_set_status "${CLAIM_ITEM_ID}" "In Progress"
+gh issue comment "${ISSUE}" --repo "${CLAIM_REPO}" \
+  --body "Claimed by \`agent:${AGENT}\` at $(date -u +%Y-%m-%dT%H:%MZ). Branch: \`${branch}\`." >/dev/null
+echo "claimed ${CLAIM_REPO}#${ISSUE} as agent:${AGENT} (branch ${branch})"

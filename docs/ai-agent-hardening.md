@@ -60,7 +60,16 @@ Minimality never justifies violating a repo's architecture boundary (e.g. busine
 
 ## Multi-Agent Coordination (apply everywhere)
 
-**Claim before you code. One issue = one agent.** Before starting work: no `agent:*` label on the issue, no existing `*/issue-<N>-*` branch, status is Ready. If claimed — stop and pick another ticket; never "help" a claimed ticket. Repos with active boards keep the claim/release command sequences in their `AGENTS.md`.
+**Claim before you code. One issue = one agent.** Before starting work: no `agent:*` label on the issue, no existing `*/issue-<N>-*` branch or open PR from any tool, and Project status is Ready. If claimed — stop and pick another ticket; never "help" a claimed ticket.
+
+The `agent:*` label (`agent:claude`, `agent:codex`, `agent:cursor`) is the claim marker in every repo. Claim and release with the shared scripts, vendored at the pinned governance version, instead of running the steps by hand:
+
+```bash
+scripts/agent/claim.sh <issue> <claude|codex|cursor> [--dry-run]   # all checks above, then label + In Progress + audit comment
+scripts/agent/release.sh <issue> <Ready|Blocked|Done> [--dry-run]   # remove agent:* labels, set status, audit comment
+```
+
+`claim.sh` changes nothing unless every check passes. Each repo keeps its Project and field ids in `.agent-claim.json` at its root (`repo`, `project_id`, `status_field_id`, `status_options` keyed by status name); the scripts hold no ids. `org-audit.yml` lists claims older than 7 days with no branch or PR (`scripts/org/stale_claims.sh`). A repo's `AGENTS.md` says to run the scripts and does not repeat the steps.
 
 ## Governance Rules An Agent Must Follow (apply everywhere)
 

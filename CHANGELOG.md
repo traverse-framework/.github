@@ -4,6 +4,28 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.4.0] - 2026-11-19
+
+### Changed
+
+- `scripts/agent/claim.sh` and `release.sh` (#57) read Project and field ids
+  from a per-repo `.agent-claim.json` instead of holding them. `claim.sh`
+  now also requires the issue's Project status to be Ready, rejects open PRs
+  from any tool by head branch, and changes nothing unless every check
+  passes. Both scripts take `--dry-run`. `release.sh` removes every `agent:*`
+  label and sets the named status.
+- `docs/ai-agent-hardening.md` names the `agent:*` label as the claim marker,
+  documents the scripts and the config file, and asks `AGENTS.md` files to
+  point at the scripts instead of repeating the steps.
+
+### Added
+
+- `scripts/agent/claim_test.sh`: tests with stubbed `gh` and `git` covering
+  a clean claim, an already-labelled issue, another tool's branch, an open
+  PR, an issue that isn't Ready or isn't on the Project, a closed issue, and
+  dry runs. They run in the `governance` workflow.
+- `.agent-claim.json` for this repo.
+
 ## [1.3.1] - 2026-11-17
 
 ### Fixed
