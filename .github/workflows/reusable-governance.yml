@@ -103,11 +103,13 @@ jobs:
             exit 1
           fi
 
-      - name: Skill copy drift (warning only)
+      - name: Skill copy drift
+        # Fails once a repo vendors skills_drift_check.sh (.github#58, v1.5.0).
         run: |
-          if [ -x scripts/agent/skills_drift_check.sh ]; then
+          if [ -f scripts/agent/skills_drift_check.sh ]; then
             if ! bash scripts/agent/skills_drift_check.sh; then
-              echo "::warning::generated Claude/Cursor skill copies drifted from .agents/skills — run scripts/agent/sync_skills.sh (.github#58)"
+              echo "::error::generated Claude/Cursor skill copies differ from .agents/skills; edit the source and run scripts/agent/sync_skills.sh (.github#58)"
+              exit 1
             fi
           else
             echo "no skills_drift_check.sh in this repo; skipping"
