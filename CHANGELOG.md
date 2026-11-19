@@ -4,6 +4,31 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.5.0] - 2026-11-19
+
+### Changed
+
+- `scripts/agent/sync_skills.sh` (#58):
+  - copies every file of a skill, not only `SKILL.md`;
+  - places the generated marker after the YAML frontmatter, which must stay
+    on line 1 for the tools to load a skill;
+  - removes generated copies that have no source;
+  - takes `--check`.
+- `skills_drift_check.sh` wraps `sync_skills.sh --check`. It reports drifted,
+  missing and extra copies.
+- The reusable governance workflow's skill drift step now **fails** instead of
+  warning. This is opt-in: it runs only in repos that vendor
+  `skills_drift_check.sh`, so adopting it is a deliberate step for each repo.
+- `docs/ai-agent-hardening.md` names `.agents/skills/` as the canonical
+  source, along with the sync command and the drift check.
+
+### Added
+
+- `scripts/agent/sync_skills_test.sh`: 19 checks, including in sync, a
+  hand-edited copy, a missing copy, an extra copy, a source edit with no
+  re-sync, frontmatter placement, and a `SKILL.md` without frontmatter. They
+  run in the `governance` workflow.
+
 ## [1.4.0] - 2026-11-19
 
 ### Changed
