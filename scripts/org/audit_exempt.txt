@@ -1,0 +1,5 @@
+# Repos the governance audit and rollout skip. One per line: <repo> # <reason>
+# Adding a repo here is a maintainer decision; record it on the issue that asks.
+weekly-demos # weekly demo snapshots, not a governed codebase (maintainer decision, .github#59)
+demo-repository # GitHub-generated sample repo, never developed (maintainer decision, .github#59)
+silver-pancake-demo-repository # GitHub-generated sample repo, never developed (maintainer decision, .github#59)

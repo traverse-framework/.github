@@ -20,7 +20,8 @@ For a repo not born from the template — i.e. retrofitting governance onto an e
 
 ## Routine operation
 
-- The weekly `org-audit` workflow audits every repo and opens/updates an issue on drift. Manual run: `scripts/org/audit_compliance.sh`.
+- The weekly `org-audit` workflow audits every active repo and opens/updates an issue on drift. Manual run: `scripts/org/audit_compliance.sh`. Besides the governance files and ruleset it checks that `.governance-version` pins the latest release tag, `AGENTS.md` exists and points at `CLAUDE.md`, `CLAUDE.md` is at most 6 KB, no governance version is written in prose (in `CLAUDE.md`, `AGENTS.md` or `.specify/memory/constitution.md`), and no repo keeps a copy of the org constitution (more than one principle heading shared with `constitution.md`). Any ❌ fails the job.
+- Archived repos are skipped. Repos listed in `scripts/org/audit_exempt.txt` (with a reason) are skipped by the audit and by `rollout_governance.sh`'s default repo list; adding one is a maintainer decision.
 - Dependabot PRs: the `dependabot-hygiene` reusable workflow fills their bodies with the required sections (honest governing-spec declarations computed from changed files); repo CI gates then decide. If one predates the workflow, comment `@dependabot rebase`.
 - Merging is always: open PR → gates green → `gh pr merge --squash --auto`. Never disable a ruleset to land something — fix forward.
 
