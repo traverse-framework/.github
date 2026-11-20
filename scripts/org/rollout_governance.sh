@@ -10,7 +10,8 @@
 #
 # Usage: scripts/org/rollout_governance.sh <version-tag> [repo ...]
 #        e.g. scripts/org/rollout_governance.sh v1.0.0 registry website
-#        (default repos: all org repos except .github)
+#        (default repos: all active org repos except .github and those in
+#        scripts/org/audit_exempt.txt)
 # Requires: gh CLI with push access; git.
 set -euo pipefail
 
@@ -24,9 +25,16 @@ trap 'rm -rf "$WORKDIR"' EXIT
 if [ "$#" -gt 0 ]; then
   repos=("$@")
 else
+  # Archived repos and repos in audit_exempt.txt are skipped (.github#59).
+  exempt_file="$(cd "$(dirname "$0")" && pwd)/audit_exempt.txt"
   repos=()
-  while IFS= read -r r; do repos+=("$r"); done \
-    < <(gh repo list "$ORG" --limit 200 --json name --jq '.[].name | select(. != ".github")')
+  while IFS= read -r r; do
+    if [ -f "$exempt_file" ] && awk -v r="$r" '$1 == r { found = 1 } END { exit !found }' "$exempt_file"; then
+      continue
+    fi
+    repos+=("$r")
+  done < <(gh repo list "$ORG" --limit 200 --json name,isArchived \
+    --jq '.[] | select((.isArchived | not) and .name != ".github") | .name')
 fi
 
 write_cla_workflow() {

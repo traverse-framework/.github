@@ -4,6 +4,27 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [1.6.0] - 2026-11-20
+
+### Added
+
+- `scripts/org/audit_compliance.sh` reports four drift checks per repo (#59):
+  `.governance-version` pins the latest release tag; `AGENTS.md` points at
+  `CLAUDE.md`; `CLAUDE.md` is at most 6 KB; no governance version is written
+  in prose in `CLAUDE.md`, `AGENTS.md` or the constitution file; and no repo
+  keeps a copy of the org constitution.
+- `scripts/org/audit_exempt.txt`: repos the audit and the rollout script skip,
+  each with a reason. Lists `weekly-demos` and GitHub's two generated demo
+  repos (maintainer decision on #59). Archived repos are skipped too.
+- `scripts/org/audit_compliance_test.sh`: 18 checks with a stubbed `gh`,
+  including a deliberately stale `.governance-version`. They run in the
+  `governance` workflow.
+
+### Fixed
+
+- The audit now fails when any file check is red. Before, each cell was
+  computed in a subshell, so only the ruleset column could fail the job.
+
 ## [1.5.0] - 2026-11-19
 
 ### Changed
