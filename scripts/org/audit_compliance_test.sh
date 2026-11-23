@@ -12,7 +12,8 @@ mkdir -p "${work}/bin"
 cat > "${work}/bin/gh" <<'STUB'
 #!/usr/bin/env bash
 # Fixture layout: $FAKE_ROOT/repos (name<TAB>archived), $FAKE_ROOT/tags,
-# $FAKE_ROOT/<repo>/<path> for file contents.
+# $FAKE_ROOT/<repo>/<path> for file contents. A path containing $FAKE_FAIL
+# answers HTTP 500; a missing path answers HTTP 404, as gh does.
 jq_expr=""
 args=("$@")
 for ((i = 0; i < ${#args[@]}; i++)); do
@@ -30,14 +31,19 @@ esac
 [[ "$1" == "api" ]] || { echo "unexpected gh call: $*" >&2; exit 99; }
 path=""
 for a in "${args[@]:1}"; do [[ "$a" == repos/* ]] && path="$a"; done
+if [[ -n "${FAKE_FAIL:-}" && "$path" == *"${FAKE_FAIL}"* ]]; then
+  echo "gh: Server Error (HTTP 500)" >&2; exit 1
+fi
 case "$path" in
   */rulesets) printf 'traverse-governance-baseline\n' ;;
   */tags) cat "${FAKE_ROOT}/tags" ;;
   */contents/*)
     repo="${path#repos/*/}"; repo="${repo%%/contents/*}"
     file="${FAKE_ROOT}/${repo}/${path#*/contents/}"
-    [[ -f "$file" ]] || exit 1
-    if [[ -n "$jq_expr" ]]; then echo "${path#*/contents/}"; else cat "$file"; fi ;;
+    if [[ -d "$file" ]]; then ls "$file"
+    elif [[ ! -f "$file" ]]; then echo "gh: Not Found (HTTP 404)" >&2; exit 1
+    elif [[ -n "$jq_expr" ]]; then echo "${path#*/contents/}"
+    else cat "$file"; fi ;;
   *) echo "unexpected gh api path: $path" >&2; exit 99 ;;
 esac
 STUB
@@ -58,6 +64,7 @@ compliant_repo() { # compliant_repo <name>
   printf '# Constitution Pointer\n\nSee traverse-framework/.github.\n' > "$d/.specify/memory/constitution.md"
 }
 fresh() {
+  unset FAKE_FAIL
   rm -rf "${FAKE_ROOT}" && mkdir -p "${FAKE_ROOT}/.github"
   printf 'v1.4.0\nv1.6.0\nv1.10.0-rc1\nv1.5.0\n' > "${FAKE_ROOT}/tags"
   printf '# Constitution\n\n### I. Alpha\n### II. Beta\n### III. Gamma\n' > "${FAKE_ROOT}/.github/constitution.md"
@@ -94,6 +101,9 @@ expect "a missing AGENTS.md fails the pointer column" 1 app 8 "❌"
 fresh; printf '# Agents\n\nClaim first.\n' > "${FAKE_ROOT}/app/AGENTS.md"
 expect "an AGENTS.md that does not point at CLAUDE.md fails" 1 app 8 "❌"
 
+fresh; rm "${FAKE_ROOT}/app/CLAUDE.md"
+expect "an AGENTS.md pointing at a missing CLAUDE.md fails" 1 app 8 "❌"
+
 fresh; head -c 6145 /dev/zero | tr '\0' 'x' > "${FAKE_ROOT}/app/CLAUDE.md"
 expect "a CLAUDE.md over 6 KB fails" 1 app 9 "❌"
 fresh; head -c 6144 /dev/zero | tr '\0' 'x' > "${FAKE_ROOT}/app/CLAUDE.md"
@@ -108,6 +118,13 @@ expect "a governance version in the constitution pointer fails" 1 app 10 "❌"
 fresh; printf '# Repo\n\nServe on 127.0.0.1:8787 (see traverse-framework/.github#57).\n' > "${FAKE_ROOT}/app/CLAUDE.md"
 expect "IP addresses and issue refs are not prose versions" 0 app 10 "✅"
 
+fresh; printf '# Repo\n\nPinned at v1.3.0 of governance.\n' > "${FAKE_ROOT}/app/CLAUDE.md"
+expect "a version before the word governance fails" 1 app 10 "❌"
+fresh; printf '# Org-wide CLA gate — see traverse-framework/.github (governance v1.0.1).\nname: cla\n' > "${FAKE_ROOT}/app/.github/workflows/cla.yml"
+expect "a governance version in a workflow comment fails" 1 app 10 "❌"
+fresh; printf '# Rust 1.95.0 toolchain; pinned action versions below.\nname: ci\njobs:\n  x:\n    uses: traverse-framework/.github/.github/workflows/reusable-governance.yml@v1.6.0\n    steps:\n      - uses: actions/checkout@v4.2.0\n' > "${FAKE_ROOT}/app/.github/workflows/ci.yml"
+expect "workflow code lines and unrelated comment versions are not prose versions" 0 app 10 "✅"
+
 fresh; printf '# Local\n\n### I. Alpha\n### II. Beta\n' > "${FAKE_ROOT}/app/.specify/memory/constitution.md"
 expect "a constitution sharing two org principles is a copy" 1 app 11 "❌"
 fresh; printf '# Local\n\n### I. Alpha\n### Repo rule\n' > "${FAKE_ROOT}/app/.specify/memory/constitution.md"
@@ -120,6 +137,13 @@ printf 'demo # sample repo\n' > "${AUDIT_EXEMPT_FILE}"
 run
 [[ "${got}" -eq 0 && -z "$(row demo)" ]] && grep -qF -- '- `demo`: sample repo' "${work}/out" &&
   ok "exempt repos are listed with their reason and not audited" || bad "exempt: exit ${got} $(cat "${work}/out")"
+
+for target in CLAUDE.md AGENTS.md .governance-version dependabot.yml constitution.md .github/workflows /tags; do
+  fresh; export FAKE_FAIL="$target"
+  run
+  [[ "${got}" -eq 2 ]] && grep -q "audit incomplete: GitHub API error" "${work}/out" &&
+    ok "an HTTP 500 on ${target} stops the audit (exit 2), not a pass" || bad "500 on ${target}: exit ${got} $(cat "${work}/out")"
+done
 
 fresh; : > "${FAKE_ROOT}/tags"
 run

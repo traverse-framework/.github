@@ -4,11 +4,29 @@ All notable changes to the org-wide governance in this repository are documented
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/): a **major** bump means a rule change that can newly block merges in consuming repos; **minor** adds rules or tooling that are backwards-compatible; **patch** is clarification only.
 
+## [Unreleased]
+
+### Fixed
+
+- `scripts/org/audit_compliance.sh` (#69):
+  - A GitHub API error other than 404 (a 5xx, a rate limit) now stops the
+    audit with exit 2 ("audit incomplete") instead of reading as "file
+    absent" and turning checks green. `org-audit.yml` adds the error to the
+    report.
+  - `AGENTS.md → CLAUDE.md` fails when `CLAUDE.md` does not exist.
+  - The prose-version check also catches a version written before the word
+    ("v1.3.0 of governance") and scans the comment lines of
+    `.github/workflows/*.yml`.
+- `scripts/org/rollout_governance.sh` no longer writes the governance version
+  into the header comment of the `cla.yml` and `governance.yml` it generates.
+- `scripts/org/audit_compliance_test.sh` is executable and has 29 checks,
+  including HTTP 500 on each kind of read.
+
 ## [1.6.0] - 2026-11-20
 
 ### Added
 
-- `scripts/org/audit_compliance.sh` reports four drift checks per repo (#59):
+- `scripts/org/audit_compliance.sh` reports five drift checks per repo (#59):
   `.governance-version` pins the latest release tag; `AGENTS.md` points at
   `CLAUDE.md`; `CLAUDE.md` is at most 6 KB; no governance version is written
   in prose in `CLAUDE.md`, `AGENTS.md` or the constitution file; and no repo

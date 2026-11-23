@@ -28,8 +28,15 @@ jobs:
           GH_TOKEN: ${{ secrets.ORG_AUDIT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           set +e
-          scripts/org/audit_compliance.sh > report.md
-          echo "failed=$?" >> "$GITHUB_OUTPUT"
+          scripts/org/audit_compliance.sh > report.md 2> audit-errors.txt
+          rc=$?
+          # Exit 2 means the audit could not finish (e.g. a GitHub API error);
+          # put the reason in the report so the issue does not show a partial
+          # table as if it were complete.
+          if [ -s audit-errors.txt ]; then
+            { echo; echo "## Audit errors (exit $rc)"; echo; echo '```'; cat audit-errors.txt; echo '```'; } >> report.md
+          fi
+          echo "failed=$rc" >> "$GITHUB_OUTPUT"
           cat report.md >> "$GITHUB_STEP_SUMMARY"
 
 
