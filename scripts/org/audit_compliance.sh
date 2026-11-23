@@ -33,12 +33,18 @@ SHARED_HEADING_LIMIT=1
 FAILURES=0
 
 ERR_FILE="$(mktemp)"
-trap 'rm -f "$ERR_FILE"' EXIT
+# No EXIT trap: on bash 3.2 (macOS) any EXIT trap turns a `set -u` abort into
+# exit 0, because $? is already 0 when the trap runs. Every deliberate exit
+# goes through finish(); a crash only leaves a temp file behind.
+finish() { # status -> removes the temp file and exits with status
+  rm -f "$ERR_FILE"
+  exit "$1"
+}
 
 api_failed() { # what -> exit 2 unless the last gh call was a 404
   grep -q 'HTTP 404' "$ERR_FILE" && return 0
   echo "audit incomplete: GitHub API error reading $1: $(tr '\n' ' ' < "$ERR_FILE")" >&2
-  exit 2
+  finish 2
 }
 
 has_file() { # repo path -> 0 if present, 1 if absent (404); exits 2 on other errors
@@ -96,14 +102,14 @@ tags="$(gh api "repos/$ORG/.github/tags" --paginate --jq '.[].name' 2>"$ERR_FILE
 latest="$(printf '%s\n' "$tags" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)"
 if [ -z "$latest" ]; then
   echo "cannot determine the latest governance release tag of $ORG/.github" >&2
-  exit 2
+  finish 2
 fi
 org_constitution=""
 fetch org_constitution .github constitution.md || true
 org_headings="$(printf '%s\n' "$org_constitution" | grep -E '^### ' || true)"
 if [ -z "$org_headings" ]; then
   echo "cannot read principle headings from $ORG/.github constitution.md" >&2
-  exit 2
+  finish 2
 fi
 
 echo "# Governance compliance report — $ORG"
@@ -113,9 +119,18 @@ echo
 echo "| repo | version pin | pin is ${latest} | dependabot | CLA wf | governance wf | agent docs | AGENTS.md → CLAUDE.md | CLAUDE.md ≤ 6 KB | no prose versions | no constitution copy | needs-review label | ruleset |"
 echo "|---|---|---|---|---|---|---|---|---|---|---|---|---|"
 
+if ! repo_list="$(gh repo list "$ORG" --limit 200 --json name,isArchived \
+    --jq '.[] | select(.isArchived | not) | .name' 2>"$ERR_FILE")"; then
+  echo "audit incomplete: GitHub API error listing $ORG repos: $(tr '\n' ' ' < "$ERR_FILE")" >&2
+  finish 2
+fi
 repos=()
-while IFS= read -r r; do repos+=("$r"); done \
-  < <(gh repo list "$ORG" --limit 200 --json name,isArchived --jq '.[] | select(.isArchived | not) | .name')
+while IFS= read -r r; do [ -n "$r" ] && repos+=("$r"); done <<< "$repo_list"
+if [ "${#repos[@]}" -eq 0 ]; then
+  # An org with no active repos is not a real result; treat it as a failed read.
+  echo "audit incomplete: no active repos listed for $ORG" >&2
+  finish 2
+fi
 
 exempt_rows=()
 for repo in "${repos[@]}"; do
@@ -186,6 +201,7 @@ fi
 echo
 if [ "$FAILURES" -gt 0 ]; then
   echo "**$FAILURES check(s) failing.** Run \`scripts/org/rollout_governance.sh\` and \`scripts/org/apply_rulesets.sh\` from traverse-framework/.github to remediate."
-  exit 1
+  finish 1
 fi
 echo "All repos compliant."
+finish 0

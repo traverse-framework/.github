@@ -17,10 +17,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - The prose-version check also catches a version written before the word
     ("v1.3.0 of governance") and scans the comment lines of
     `.github/workflows/*.yml`.
+  - A failed `gh repo list`, or an org with no active repos, also stops the
+    audit with exit 2. Before, it printed "All repos compliant." and exited 0
+    (post-merge review of #71).
+  - No EXIT trap: on bash 3.2 any EXIT trap turned a `set -u` abort into
+    exit 0. Deliberate exits go through `finish()`, which removes the temp
+    file.
 - `scripts/org/rollout_governance.sh` no longer writes the governance version
-  into the header comment of the `cla.yml` and `governance.yml` it generates.
-- `scripts/org/audit_compliance_test.sh` is executable and has 29 checks,
-  including HTTP 500 on each kind of read.
+  into the header comment of the `cla.yml` and `governance.yml` it generates,
+  or into the `CLAUDE.md` it creates for a repo with no agent docs; it also
+  creates an `AGENTS.md` pointing at `CLAUDE.md`, so a fresh rollout passes
+  the audit.
+- `scripts/org/audit_compliance_test.sh` is executable and has 33 checks,
+  including HTTP 500 on each kind of read (matched on the exact path, so each
+  case fails the read it names) and on the repo listing.
 
 ## [1.6.0] - 2026-11-20
 
