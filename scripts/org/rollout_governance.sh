@@ -40,7 +40,7 @@ fi
 write_cla_workflow() {
   mkdir -p "$1/.github/workflows"
   cat > "$1/.github/workflows/cla.yml" <<EOF
-# Org-wide CLA gate — see traverse-framework/.github (governance $VERSION).
+# Org-wide CLA gate — see traverse-framework/.github; the adopted release is in .governance-version.
 name: cla
 
 on:
@@ -66,7 +66,7 @@ EOF
 write_governance_workflow() {
   mkdir -p "$1/.github/workflows"
   cat > "$1/.github/workflows/governance.yml" <<EOF
-# Org-wide governance baseline gate — see traverse-framework/.github (governance $VERSION).
+# Org-wide governance baseline gate — see traverse-framework/.github; the adopted release is in .governance-version.
 name: governance
 
 on:
