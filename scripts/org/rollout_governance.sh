@@ -151,13 +151,20 @@ EOF
   fi
 
   if [ ! -e "$dir/CLAUDE.md" ] && [ ! -e "$dir/AGENTS.md" ]; then
-    cat > "$dir/CLAUDE.md" <<EOF
+    # No version in prose: the adopted release lives only in .governance-version.
+    cat > "$dir/CLAUDE.md" <<'EOF'
 # CLAUDE.md
 
 This repo follows the org-wide governance in
-https://github.com/traverse-framework/.github, version $VERSION
-(see \`.governance-version\`). Read that repo's constitution, quality
-standards, and AI-agent hardening rules before making changes here.
+https://github.com/traverse-framework/.github, at the release pinned in
+`.governance-version`. Read that repo's constitution, quality standards,
+and AI-agent hardening rules before making changes here.
+EOF
+    cat > "$dir/AGENTS.md" <<'EOF'
+# AGENTS.md
+
+Read CLAUDE.md first; it is the entry point for every agent in this repo.
+Claim tickets with `scripts/agent/claim.sh` before starting work.
 EOF
   fi
 

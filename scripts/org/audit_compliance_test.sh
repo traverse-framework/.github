@@ -12,8 +12,9 @@ mkdir -p "${work}/bin"
 cat > "${work}/bin/gh" <<'STUB'
 #!/usr/bin/env bash
 # Fixture layout: $FAKE_ROOT/repos (name<TAB>archived), $FAKE_ROOT/tags,
-# $FAKE_ROOT/<repo>/<path> for file contents. A path containing $FAKE_FAIL
-# answers HTTP 500; a missing path answers HTTP 404, as gh does.
+# $FAKE_ROOT/<repo>/<path> for file contents. An API path ending in $FAKE_FAIL
+# (or the `repo list` call when FAKE_FAIL is "repo list") answers HTTP 500; a
+# missing path answers HTTP 404, as gh does.
 jq_expr=""
 args=("$@")
 for ((i = 0; i < ${#args[@]}; i++)); do
@@ -21,6 +22,7 @@ for ((i = 0; i < ${#args[@]}; i++)); do
 done
 case "$1 $2" in
   "repo list")
+    [[ "${FAKE_FAIL:-}" == "repo list" ]] && { echo "gh: API rate limit exceeded (HTTP 403)" >&2; exit 1; }
     while IFS=$'\t' read -r name archived; do
       printf '{"name":"%s","isArchived":%s}\n' "$name" "$archived"
     done < "${FAKE_ROOT}/repos" | jq -s . | jq -r "${jq_expr}"
@@ -31,7 +33,7 @@ esac
 [[ "$1" == "api" ]] || { echo "unexpected gh call: $*" >&2; exit 99; }
 path=""
 for a in "${args[@]:1}"; do [[ "$a" == repos/* ]] && path="$a"; done
-if [[ -n "${FAKE_FAIL:-}" && "$path" == *"${FAKE_FAIL}"* ]]; then
+if [[ -n "${FAKE_FAIL:-}" && "$path" == *"${FAKE_FAIL}" ]]; then
   echo "gh: Server Error (HTTP 500)" >&2; exit 1
 fi
 case "$path" in
@@ -138,12 +140,20 @@ run
 [[ "${got}" -eq 0 && -z "$(row demo)" ]] && grep -qF -- '- `demo`: sample repo' "${work}/out" &&
   ok "exempt repos are listed with their reason and not audited" || bad "exempt: exit ${got} $(cat "${work}/out")"
 
-for target in CLAUDE.md AGENTS.md .governance-version dependabot.yml constitution.md .github/workflows /tags; do
+for target in app/contents/CLAUDE.md app/contents/AGENTS.md app/contents/.governance-version \
+  app/contents/.github/dependabot.yml .github/contents/constitution.md \
+  app/contents/.specify/memory/constitution.md app/contents/.github/workflows \
+  app/contents/.github/workflows/cla.yml /tags "repo list"; do
   fresh; export FAKE_FAIL="$target"
   run
   [[ "${got}" -eq 2 ]] && grep -q "audit incomplete: GitHub API error" "${work}/out" &&
     ok "an HTTP 500 on ${target} stops the audit (exit 2), not a pass" || bad "500 on ${target}: exit ${got} $(cat "${work}/out")"
 done
+
+fresh; printf 'old\ttrue\n' > "${FAKE_ROOT}/repos"
+run
+[[ "${got}" -eq 2 ]] && grep -q "no active repos listed" "${work}/out" &&
+  ok "an org with no active repos stops the audit (exit 2), not a pass" || bad "no repos: exit ${got} $(cat "${work}/out")"
 
 fresh; : > "${FAKE_ROOT}/tags"
 run
