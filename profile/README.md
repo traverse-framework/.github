@@ -37,7 +37,7 @@ Working implementation of
 1. [What is real today](https://traverse-framework.com/what-is-real-today.html)
 2. [The agent freestyled a $2.4M wire. The runtime said no.](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
    (deny + trace)
-3. Deny / multi-host direction (blog-first): [agent freestyle → blocked](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
+3. Deny / multi-host direction (blog-first): [agent freestyle, blocked](https://traverse-framework.com/blog/agent-freestyle-blocked.html)
    · [same-wasm multi-host](https://traverse-framework.com/blog/same-wasm-multi-host.html)
    · [signed exact-ref digits](https://traverse-framework.com/blog/signed-exact-ref-digits.html)
    · [agent MCP exact-ref](https://traverse-framework.com/blog/agent-mcp-exact-ref.html)
@@ -50,8 +50,10 @@ Working implementation of
    · [We measured our own LLM-assisted capabilities. The bar was not met.](https://traverse-framework.com/blog/we-measured-our-llm-assisted-capabilities.html) (registry evaluation, bar not met; not a release)
    · [catalog model.execute on the published Browser and Node path](https://traverse-framework.com/blog/product-path-model-execute.html) (Nov 6 weekly demo, v0.16.2)
    · [a governed model call you can actually stop](https://traverse-framework.com/blog/kill-switch.html) (Nov 13 weekly demo, v0.17.0 tag tree; v0.17.1 published Nov 15)
+   · [the browser skips Ollama and picks the signed pin](https://traverse-framework.com/blog/browser-skips-ollama-picks-signed-pin.html)
+   · [the host result names the model it ran](https://traverse-framework.com/blog/host-result-names-the-model-it-ran.html)
    · [How do I run the deny demo?](https://traverse-framework.com/questions/how-do-i-run-the-agent-blocked-weekly-demo.html)
-   — `weekly-demos` is **not publicly cloneable yet** ([.github#30](https://github.com/traverse-framework/.github/issues/30))
+   (every weekly demo is public in [`weekly-demos`](https://github.com/traverse-framework/weekly-demos))
 4. Where business logic lives (hosts stay thin; non-UI domain logic in capabilities;
    apps-not-ready ≠ host-forever):
    [Q&A](https://traverse-framework.com/questions/where-does-business-logic-live-in-traverse.html)
@@ -82,7 +84,7 @@ start in [`traverse`](https://github.com/traverse-framework/traverse)
 | [`registry`](https://github.com/traverse-framework/registry) | The public capability registry — a git-based, PR-published catalog of governed capabilities. Live catalog: [registry.traverse-framework.com](https://registry.traverse-framework.com) (counts change; treat the site as source of truth). |
 | [`reference-apps`](https://github.com/traverse-framework/reference-apps) | UI shells for the same Traverse capabilities: Web, macOS, iOS, Android, Windows, Linux, CLI, plus MCP façades for Claude, Cursor, ChatGPT, and Grok. |
 | [`claude-skills`](https://github.com/traverse-framework/claude-skills) | Claude Skills for building on Traverse — primary authoring on-ramp (`traverse-capability-author`), plus extractor and workflow-planner. Check the registry before authoring; validate against the real CLI. |
-| [`weekly-demos`](https://github.com/traverse-framework/weekly-demos) | Runnable weekly demos (private). Start with `2026-09-18-agent-blocked` — agent freestyle → deny / trace. |
+| [`weekly-demos`](https://github.com/traverse-framework/weekly-demos) | Runnable weekly demos, public, one folder per week. Start with `2026-09-18-agent-blocked`: the agent freestyles, the runtime denies it and writes a trace. |
 | [`website`](https://github.com/traverse-framework/website) | The public site and documentation. |
 | [`.github`](https://github.com/traverse-framework/.github) | *(this repo)* Org-wide governance — constitution, NFRs, quality standards, CI gates, CLA, and AI-agent hardening rules shared by every repo above. |
 | [`repo-template`](https://github.com/traverse-framework/repo-template) | Starting point for a new org repo — compliant with governance from the first commit. |
